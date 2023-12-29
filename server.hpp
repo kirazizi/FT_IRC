@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/28 17:40:42 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/29 20:31:30 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define SERVER_HPP
 
 #include "headers.hpp"
+#include "client.hpp"
 
 class server
 {

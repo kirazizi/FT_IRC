@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/28 22:18:33 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/29 21:07:27 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,10 @@ server::server(int port, std::string password){
 }
 
 int server::server_setup(){
+    std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
+    std::cout << "▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄   ░█░ █▄█   █ █▀▄ █▄▄   ▄█ ██▄ █▀▄ ▀▄▀ ██▄ █▀▄" << std::endl; 
     
-    std::cout << "------> Server is running on port :" << this->port << std::endl;
+    std::cout << "\033[34m\t\tServer is running on port: " << this->port << "\033[0m" << std::endl;
 
     // create socket using socket() function
     int fdsocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET = IPv4, SOCK_STREAM = TCP, 0 = IP
@@ -71,7 +73,7 @@ void server::server_accept(int fdsocket){
         std::cout << "Error: accepting connection" << std::endl;
         exit(1);
     }
-    std::cout<< "connection accepted" << std::endl;
+    std::cout<< "\033[33mconecting ...\033[0m" << std::endl;
     struct pollfd clpoll;
     clpoll.fd = fdclient;
     clpoll.events = POLLIN;
@@ -80,17 +82,26 @@ void server::server_accept(int fdsocket){
 }
 
 void server::server_recieve(int fdclient){
-    char buffer[1024];
-    memset(buffer, 0, 1024);
-    int rcv = recv(fdclient, buffer, 1024, 0);
+    char msg[1024];
+    memset(msg, 0, 1024);
+    int rcv = recv(fdclient, msg, 1024, 0);
     if (rcv < 0){
         std::cout << "Error: reading from socket" << std::endl;
         exit(1);
     }
     if (rcv == 0){
         std::cout << "Client disconnected" << std::endl;
+        exit(1);
     }
-    std:: cout << "Client "<< fdclient << " send: "<< buffer;
+    std::string cmd = get_cmd(msg);;
+    std::string value = get_value(msg);
+    
+    if(cmd == "USER")
+        std::cout << "user: " << value << std::endl;
+    if(value == "kira"){
+        std::cout << value << " has joined" << std::endl;
+        send(fdclient, "\033[31m welcome boss\033[0m", 20, 0);
+    }
 }
 
 void server::server_polling(int fdsocket){
@@ -105,7 +116,7 @@ void server::server_polling(int fdsocket){
 
     while(true){
         int pl = poll(&vpoll[0], vpoll.size(), 0);
-        if (pl < 0){
+        if (pl == -1){
             std::cout<< "Error: poll" << std::endl;
             exit(1);
         }

@@ -1,91 +1,100 @@
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <iostream>
+#include <string>
+#include <vector>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
-#include<iostream>
+#include <arpa/inet.h>
+#include <vector>
+#include <poll.h>
+#include <fcntl.h>
 
-/*
- * Server Main.
- */
-int main(int argc, char *argv[])
-{
-    unsigned short port;       /* port server binds to                */
-    char buf[12];              /* buffer for sending & receiving data */
-    struct sockaddr_in client; /* client address information          */
-    struct sockaddr_in server; /* server address information          */
-    int s;                     /* socket for accepting connections    */
-    int ns;                    /* socket connected to client          */
-    int namelen;               /* length of client name               */
+int main(int ac, char **av)
+{   
+    // get port number
+    int port = atoi(av[1]);
 
-    /*
-     * Check arguments. Should be only one: the port number to bind to.
-     */
-
-    if (argc != 2)
-    {
-        fprintf(stderr, "Usage: %s port\n", argv[0]);
+    // creat a socket
+    int fdsocket = socket(AF_INET, SOCK_STREAM, 0);
+    if(fdsocket == -1){
+        perror("socket");
         exit(1);
     }
 
-    /*
-     * First argument should be the port.
-     */
-    port = (unsigned short) atoi(argv[1]);
+    // add struct data
+    struct sockaddr_in srv;
 
-    /*
-     * Get a socket for accepting connections.
-     */
-    if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        exit(2);
+    // clear addres
+    // memset(&srv, 0, sizeof(srv));
+
+    // init addr 
+    srv.sin_family = AF_INET;
+    srv.sin_port = htons(port);
+    srv.sin_addr.s_addr = INADDR_ANY;
+
+    // bind sokcet with port
+    if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv))){
+        perror("bind");
+        exit(1);
     }
 
-    /*
-     * Bind the socket to the server address.
-     */
-    server.sin_family = AF_INET;
-    server.sin_port   = htons(port);
-    server.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(s, (struct sockaddr *)&server, sizeof(server)) < 0)
-    {
-        exit(3);
+    // listen a sig of socket
+    if (listen(fdsocket, 10)){
+        perror("listen");
+        exit(1);
     }
 
-    /*
-     * Listen for connections. Specify the backlog as 1.
-     */
-    if (listen(s, 1) != 0)
-    {
-        exit(4);
-    }
+    std::cout << "-------> server created port: " << port << std::endl;
+    // now a part of hundel server to accept multpl clients and polling
 
-    /*
-     * Accept a connection.
-     */
-    namelen = sizeof(client);
-    if ((ns = accept(s, (struct sockaddr *)&client, (socklen_t *)&namelen)) == -1)
-    {
-        exit(5);
-    }
-    std::cout << "here\n";
-    // /*
-    //  * Receive the message on the newly connected socket.
-    //  */
-    // if (recv(ns, buf, sizeof(buf), 0) == -1)
-    // {
-    //     exit(6);
-    // }
+    // vector for poll
+    std::vector<pollfd> vpoll;
 
-    // /*
-    //  * Send the message back to the client.
-    //  */
-    // if (send(ns, buf, sizeof(buf), 0) < 0)
-    // {
-    //     exit(7);
-    // }
-    // printf("Server ended successfully\n");
-    exit(0);
+    // pollfd struct init
+    struct pollfd pollfd;
+    
+    pollfd.fd = fdsocket;
+    pollfd.events = POLLIN;
+    pollfd.revents = 0;
+
+    vpoll.push_back(pollfd);
+
+    while(true){
+        // polling for new event
+        int pl = poll(&vpoll[0], vpoll.size(), 0);
+        if(pl == -1){
+            perror("poll");
+            exit(1);
+        }
+        if(pl == 0)
+            continue;
+        for(int i = 0; i < (int)vpoll.size(); i++){
+            if(vpoll[i].revents & POLLIN){
+                if(vpoll[i].fd == fdsocket){
+                    // accept new client
+                    int fdclient = accept(fdsocket, NULL, NULL);
+                    if (fdclient == -1){
+                        perror("accept");
+                        exit(1);
+                    }
+                    std::cout << "new client connected :)" << std::endl;
+                    struct pollfd clpoll;
+                    clpoll.fd = fdclient;
+                    clpoll.events = POLLIN;
+                    clpoll.revents = 0;
+
+                    vpoll.push_back(clpoll);
+                }
+                else{
+                    // msg recive from client
+                    char message[1024];
+
+                    if(recv(vpoll[i].fd, message, 1024, 0) == -1)
+                        perror("recv");
+                    std::cout<< "client " << vpoll[i].fd << " send: " << message;
+                }
+            }
+        }
+    }
+    return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 13:21:55 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/28 21:56:37 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/29 20:34:11 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int main(int ac, char **av){
         password = av[2];
     
     int port = atoi(av[1]);
-    
+
     // parsing input
     parsing.parsing_input(port, password);
     server srv(port, password);
