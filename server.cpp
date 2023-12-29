@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/29 21:07:27 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/29 21:13:11 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,11 @@ void server::server_recieve(int fdclient){
     std::string cmd = get_cmd(msg);;
     std::string value = get_value(msg);
     
-    if(cmd == "USER")
-        std::cout << "user: " << value << std::endl;
-    if(value == "kira"){
+    // if(cmd == "USER")
+    //     std::cout << "user: " << value << std::endl;
+    if(cmd == "USER" && value == "kira"){
         std::cout << value << " has joined" << std::endl;
-        send(fdclient, "\033[31m welcome boss\033[0m", 20, 0);
+        send(fdclient, "\033[31m welcome boss\n\033[0m", 21, 0);
     }
 }
 
