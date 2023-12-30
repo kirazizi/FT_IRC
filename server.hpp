@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/29 20:31:30 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/30 21:23:19 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,21 @@
 #include "headers.hpp"
 #include "client.hpp"
 
-class server
-{
+class server : public client{
     public:
         std::vector<int> clientfds;
         std::vector<pollfd> vpoll;
         int port;
-        std::string password;
+        std::string srv_pass;
         server(void);
         server(int port, std::string password);
         int server_setup();
         void server_polling(int fdsocket);
         void server_accept(int fdsocket);
         void server_recieve(int fdclient);
+        // std::string username;
+        // std::string nickname;
+        // std::string password;
 };
-
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/29 21:13:11 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/30 21:29:20 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ server::server(void){
 
 server::server(int port, std::string password){
     this->port = port;
-    this->password = password;
+    this->srv_pass = password;
 }
 
 int server::server_setup(){
@@ -95,12 +95,23 @@ void server::server_recieve(int fdclient){
     }
     std::string cmd = get_cmd(msg);;
     std::string value = get_value(msg);
-    
-    // if(cmd == "USER")
-    //     std::cout << "user: " << value << std::endl;
-    if(cmd == "USER" && value == "kira"){
-        std::cout << value << " has joined" << std::endl;
-        send(fdclient, "\033[31m welcome boss\n\033[0m", 21, 0);
+
+    if(cmd == "USER" && value != ""){
+        this->username = value;
+    }
+    else if(cmd == "PASS" && value != ""){
+        this->password = value;
+    }
+    else if(cmd == "NICK" && value != ""){
+        this->nickname = value;
+    }
+    if(!this->username.empty() && !this->nickname.empty() && !this->password.empty()){
+        if(this->password == this->srv_pass){
+            std::cout << this->username << " has joined" << std::endl;
+            send(fdclient, "Welcome to the server", 22, 0);
+        }
+        else
+            send(fdclient, "Wrong password please try again!\n", 33, 0);
     }
 }
 
@@ -113,7 +124,7 @@ void server::server_polling(int fdsocket){
     srvpoll.revents = 0;
 
     vpoll.push_back(srvpoll);
-
+    
     while(true){
         int pl = poll(&vpoll[0], vpoll.size(), 0);
         if (pl == -1){
