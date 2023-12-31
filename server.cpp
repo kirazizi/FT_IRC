@@ -6,19 +6,16 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/30 21:29:20 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/31 16:11:06 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-server::server(void){
-}
-
-server::server(int port, std::string password){
-    this->port = port;
-    this->srv_pass = password;
-}
+    // send(fdclient, "please identify yourself\n", 25, 0);
+    // send(fdclient, "USER <username>\n", 16, 0);
+    // send(fdclient, "PASS <password>\n", 16, 0);
+    // send(fdclient, "NICK <nickname>\n", 17, 0);
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
@@ -79,7 +76,59 @@ void server::server_accept(int fdsocket){
     clpoll.events = POLLIN;
     clpoll.revents = 0;
     vpoll.push_back(clpoll);
+
+    class client obj_client(fdclient);
+    vec_clients.push_back(obj_client);
 }
+
+void server::identify_client(std::string msg,int fdclient){
+    std::string cmd = get_cmd(msg);;
+    std::string value = get_value(msg);
+    client *target = NULL;
+    
+    for (size_t i = 0; i < vec_clients.size(); i++)
+        if (vec_clients[i].fd == fdclient)
+            target = &vec_clients[i];
+    if (target == NULL)
+        return;
+    if(cmd == "USER" && value != ""){
+        target->username = value;
+    }
+    else if(cmd == "PASS" && value != ""){
+        target->password = value;
+    }
+    else if(cmd == "NICK" && value != ""){
+        target->nickname = value;
+    }
+    if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
+        if(target->password == this->srv_pass){
+            std::cout << target->username << " has joined" << std::endl;
+            send(fdclient, "Welcome to chat server\n", 23, 0);
+        }
+        else
+            send(fdclient, "Wrong password please try again!\n", 33, 0);
+    }
+}
+
+// void hundel_cmd(std::string cmd, int fdclient){
+//     int i = 0;
+//     std::string commands[] = {"JOIN", "LEAVE", "MSG", "QUIT"};
+//     while(i < 5){
+//         if(cmd == commands[i])
+//             break;
+//         i++;
+//     }
+//     switch(i){
+//         case 0:
+//             // join_channel();
+//         case 1:
+//             // leave_channel();
+//         case 2:
+//             // send_msg();
+//         case 3:
+//             // quit();
+//     }
+// }
 
 void server::server_recieve(int fdclient){
     char msg[1024];
@@ -93,26 +142,12 @@ void server::server_recieve(int fdclient){
         std::cout << "Client disconnected" << std::endl;
         exit(1);
     }
-    std::string cmd = get_cmd(msg);;
-    std::string value = get_value(msg);
-
-    if(cmd == "USER" && value != ""){
-        this->username = value;
-    }
-    else if(cmd == "PASS" && value != ""){
-        this->password = value;
-    }
-    else if(cmd == "NICK" && value != ""){
-        this->nickname = value;
-    }
-    if(!this->username.empty() && !this->nickname.empty() && !this->password.empty()){
-        if(this->password == this->srv_pass){
-            std::cout << this->username << " has joined" << std::endl;
-            send(fdclient, "Welcome to the server", 22, 0);
-        }
-        else
-            send(fdclient, "Wrong password please try again!\n", 33, 0);
-    }
+    identify_client(msg, fdclient);
+    for(int i = 0; i < (int)vec_clients.size(); i++)
+        if (vec_clients[i].nickname != "")
+            std::cout << vec_clients[i].nickname << std::endl;
+    // hundel commands
+    // void hundel_cmd(std::string msg, int fdclient);
 }
 
 void server::server_polling(int fdsocket){
@@ -139,7 +174,6 @@ void server::server_polling(int fdsocket){
                     server_accept(fdsocket);
                 else
                     server_recieve(vpoll[i].fd);
-                    // recive or send data from client
             }
         }
     }
