@@ -6,16 +6,16 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/31 16:11:06 by sbzizal          ###   ########.fr       */
+/*   Updated: 2023/12/31 16:18:58 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-    // send(fdclient, "please identify yourself\n", 25, 0);
-    // send(fdclient, "USER <username>\n", 16, 0);
-    // send(fdclient, "PASS <password>\n", 16, 0);
-    // send(fdclient, "NICK <nickname>\n", 17, 0);
+// send(fdclient, "please identify yourself\n", 25, 0);
+// send(fdclient, "USER <username>\n", 16, 0);
+// send(fdclient, "PASS <password>\n", 16, 0);
+// send(fdclient, "NICK <nickname>\n", 17, 0);
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
