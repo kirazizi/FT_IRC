@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/31 16:06:58 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 15:45:44 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class server {
         int server_setup();
         void server_polling(int fdsocket);
         void server_accept(int fdsocket);
-        void server_recieve(int fdclient);
+        int  server_recieve(int fdclient);
         void identify_client(std::string msg,int fdclient);
 };
 

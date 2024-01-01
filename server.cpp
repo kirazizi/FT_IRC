@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/31 16:18:58 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 15:56:54 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,42 +95,30 @@ void server::identify_client(std::string msg,int fdclient){
         target->username = value;
     }
     else if(cmd == "PASS" && value != ""){
+        // check password
+        if (this->srv_pass != value){
+            send(fdclient, "Wrong password please try again!\n", 33, 0);
+            return;
+        }
         target->password = value;
     }
     else if(cmd == "NICK" && value != ""){
+        // check if nickname is already taken
+        for (size_t i = 0; i < vec_clients.size(); i++)
+            if (vec_clients[i].nickname == value){
+                send(fdclient, "Nickname already taken please try again!\n", 41, 0);
+                return;
+            }
         target->nickname = value;
     }
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
-        if(target->password == this->srv_pass){
-            std::cout << target->username << " has joined" << std::endl;
-            send(fdclient, "Welcome to chat server\n", 23, 0);
-        }
-        else
-            send(fdclient, "Wrong password please try again!\n", 33, 0);
+        std::cout << target->username << " has joined" << std::endl;
+        send(fdclient, "Welcome to chat server\n", 23, 0);
+        return;
     }
 }
 
-// void hundel_cmd(std::string cmd, int fdclient){
-//     int i = 0;
-//     std::string commands[] = {"JOIN", "LEAVE", "MSG", "QUIT"};
-//     while(i < 5){
-//         if(cmd == commands[i])
-//             break;
-//         i++;
-//     }
-//     switch(i){
-//         case 0:
-//             // join_channel();
-//         case 1:
-//             // leave_channel();
-//         case 2:
-//             // send_msg();
-//         case 3:
-//             // quit();
-//     }
-// }
-
-void server::server_recieve(int fdclient){
+int server::server_recieve(int fdclient){
     char msg[1024];
     memset(msg, 0, 1024);
     int rcv = recv(fdclient, msg, 1024, 0);
@@ -140,14 +128,16 @@ void server::server_recieve(int fdclient){
     }
     if (rcv == 0){
         std::cout << "Client disconnected" << std::endl;
-        exit(1);
+        return 1;
     }
     identify_client(msg, fdclient);
-    for(int i = 0; i < (int)vec_clients.size(); i++)
-        if (vec_clients[i].nickname != "")
-            std::cout << vec_clients[i].nickname << std::endl;
+    // for(int i = 0; i < (int)vec_clients.size(); i++)
+    //     if (vec_clients[i].nickname != "")
+    //         std::cout << vec_clients[i].nickname << std::endl;
     // hundel commands
     // void hundel_cmd(std::string msg, int fdclient);
+
+    return 0;
 }
 
 void server::server_polling(int fdsocket){
@@ -173,7 +163,8 @@ void server::server_polling(int fdsocket){
                 if(vpoll[i].fd == fdsocket)
                     server_accept(fdsocket);
                 else
-                    server_recieve(vpoll[i].fd);
+                    if(server_recieve(vpoll[i].fd))
+                        vpoll.erase(vpoll.begin() + i);
             }
         }
     }
