@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/30 14:14:00 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 23:15:15 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,37 @@ std::string get_value(const std::string &msg){
     value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
     return value;
+}
+
+std::string get_message(const std::string& str)
+{
+    std::string message = "";
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        if (str[i] == '#')
+            return message;
+        message += str[i];
+    }
+    message = "";
+    return message;
+}
+
+std::string get_channel(const std::string& str)
+{
+    std::string channel = "";
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        if (str[i] == '#')
+        {
+            for (size_t j = i; j < str.length(); j++)
+            {
+                if (str[j] == ' ')
+                    return channel;
+                channel += str[j];
+            }
+        }
+    }
+    return channel;
 }
 
 int ft_strlen(char *str){
