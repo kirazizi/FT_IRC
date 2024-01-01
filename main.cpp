@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 13:21:55 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/30 21:17:20 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 16:12:30 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int main(int ac, char **av){
     std::string password;
     int fdsocket;
     // check arguments number : first for port and second for password
-    if (ac < 2 || ac > 3){
-        std::cout << "Usage: ./server <port>" << std::endl;
+    if (ac != 3){
+        std::cout << "Usage: ./server <port> <password>" << std::endl;
         exit(1);
     }
     if (av[2])
