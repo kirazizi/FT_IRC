@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/01 16:54:36 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/02 12:17:27 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void server::server_accept(int fdsocket){
 }
 
 void server::identify_client(std::string msg,int fdclient){
-    std::string cmd = get_cmd(msg);;
+    std::string cmd = get_cmd(msg);
     std::string value = get_value(msg);
     client *target = NULL;
     
@@ -117,7 +117,7 @@ void server::identify_client(std::string msg,int fdclient){
             send(fdclient, "Welcome to chat server\n", 23, 0);
             target->is_connected = 1;
         }
-        std::cout << target->nickname << ": " << msg;
+        // std::cout << target->nickname << ": " << msg;
     }
     
 }
@@ -138,8 +138,8 @@ int server::server_recieve(int fdclient){
     // for(int i = 0; i < (int)vec_clients.size(); i++)
     //     if (vec_clients[i].nickname != "")
     //         std::cout << vec_clients[i].nickname << std::endl;
-    // hundel commands
-    // void hundel_cmd(std::string msg, int fdclient);
+    handle_cmd(msg, fdclient);
+    
 
     return 0;
 }
