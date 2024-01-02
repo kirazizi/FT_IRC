@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:17 by sbzizal           #+#    #+#             */
-/*   Updated: 2023/12/31 15:38:37 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 16:21:40 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@
 class client {
     public:
         int fd;
+        int is_connected;
         std::string nickname;
         std::string username;
         std::string password;
-        client(int fd) : fd(fd), nickname(""), username(""), password("") {};
+        client(int fd) : fd(fd), is_connected(0), nickname(""), username(""), password("") {};
 };
 
 std::string get_cmd(const std::string& str);

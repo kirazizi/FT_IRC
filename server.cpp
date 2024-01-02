@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/01 15:56:54 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/01 16:54:36 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,10 +112,14 @@ void server::identify_client(std::string msg,int fdclient){
         target->nickname = value;
     }
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
-        std::cout << target->username << " has joined" << std::endl;
-        send(fdclient, "Welcome to chat server\n", 23, 0);
-        return;
+        if(!target->is_connected){
+            std::cout << target->username << " has joined" << std::endl;
+            send(fdclient, "Welcome to chat server\n", 23, 0);
+            target->is_connected = 1;
+        }
+        std::cout << target->nickname << ": " << msg;
     }
+    
 }
 
 int server::server_recieve(int fdclient){
