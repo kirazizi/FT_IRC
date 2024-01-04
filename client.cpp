@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/01 23:15:15 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/04 00:20:39 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,11 @@ std::string get_value(const std::string &msg){
 
 std::string get_message(const std::string& str)
 {
-    std::string message = "";
-    for (size_t i = 0; i < str.length(); i++)
-    {
-        if (str[i] == '#')
-            return message;
-        message += str[i];
-    }
-    message = "";
-    return message;
+    size_t pos = str.find(' ');
+    pos = str.find(' ', pos + 1);
+    if (pos != std::string::npos)
+        return str.substr(pos + 1);
+    return "";
 }
 
 std::string get_channel(const std::string& str)
@@ -49,6 +45,26 @@ std::string get_channel(const std::string& str)
     {
         if (str[i] == '#')
         {
+            i++;
+            for (size_t j = i; j < str.length(); j++)
+            {
+                if (str[j] == ' ')
+                    return channel;
+                channel += str[j];
+            }
+        }
+    }
+    return channel;
+}
+
+std::string get_user(const std::string& str)
+{
+    std::string channel = "";
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        if (str[i] == '@')
+        {
+            i++;
             for (size_t j = i; j < str.length(); j++)
             {
                 if (str[j] == ' ')

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/02 00:35:50 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/03 23:19:58 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,16 @@
 
 #include "headers.hpp"
 #include "client.hpp"
+#include "channel.hpp"
+
+class Channel;
 
 class server {
     public:
         std::vector<int> clientfds;
         std::vector<pollfd> vpoll;
         std::vector<client> vec_clients;
+        std::vector<Channel> vec_channels;
 
         int port;
         std::string srv_pass;
@@ -34,8 +38,7 @@ class server {
         void handle_cmd(std::string msg, int fdclient);
         void join_channel(int fdclient, std::string cmd);
         void leave_channel(int fdclient, std::string cmd);
-        // void send_msg(int fdclient, std::string cmd);
-        // void quit(int fdclient, std::string cmd);
+        void send_prv_msg(int fdclient, std::string cmd);
         void switch_channel(int fdclient, std::string cmd);
         void send_message(int fdclient, std::string msg);
 };
