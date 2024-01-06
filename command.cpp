@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 21:41:17 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 23:57:19 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,31 @@ void server::join_channel(int fdclient, std::string cmd){
 				std::string send_msg = "You are not invited to the channel " + channel + "\n";
 				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 				return;
+			}
+			else if (vec_channels[j].is_private == true)
+			{
+				std::string password = get_topic(cmd);
+				if (password == "")
+				{
+					std::string send_msg = "You have to specify a password after the channel name\n";
+					send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+					return;
+				}
+				else if (password != vec_channels[j].password)
+				{
+					std::string send_msg = "The password you entered is incorrect\n";
+					send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+					return;
+				}
+				else
+				{
+					vec_channels[j].add_client(fdclient);
+					vec_clients[i].current_channel = channel;
+					std::string send_msg = "You have joined the channel " + channel + "\n";
+					send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+					std::cout << vec_clients[i].nickname << " has joined the channel " << channel << std::endl;
+					return;
+				}
 			}
 			else
 			{

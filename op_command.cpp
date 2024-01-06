@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/04 18:33:21 by tajjid            #+#    #+#             */
-/*   Updated: 2024/01/06 23:29:22 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 23:53:43 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void server::i_command(int fdclient, int c_in){
 	if (vec_channels[c_in].is_invite_only == true){
 		std::string send_msg = "This channel " + vec_channels[c_in].name + " is no longer invite only\n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].invited_clients.clear();
 		vec_channels[c_in].is_invite_only = false;
 	}
 	else {
@@ -32,6 +33,7 @@ void server::t_command(int fdclient, int c_in){
 	if (vec_channels[c_in].topic_restrict == true){
 		std::string send_msg = "This channel " + vec_channels[c_in].name + " is no longer topic restricted\n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].topic = "";
 		vec_channels[c_in].topic_restrict = false;
 	}
 	else {
@@ -41,8 +43,31 @@ void server::t_command(int fdclient, int c_in){
 	}
 }
 
-// void server::k_command(){
-// }
+void server::k_command(int fdclient, std::string cmd, int c_in){
+	
+	if (vec_channels[c_in].is_private == true){
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is not private anymore\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].password = "";
+		vec_channels[c_in].is_private = false;
+		return;
+	}
+	else if (vec_channels[c_in].is_private == false){
+		std::string password = get_topic(cmd);
+		if (password == ""){
+			std::string send_msg = "You have to specify a password after the letter \"k\"\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		else {
+			std::string send_msg = "This channel " + vec_channels[c_in].name + " is now private\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			vec_channels[c_in].password = password;
+			vec_channels[c_in].is_private = true;
+			return;
+		}
+	}
+}
 
 // void server::o_command(){
 // }
@@ -61,7 +86,8 @@ void server::op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in
 		return;
 	}
 	else if (op_cmd == "k"){
-		std::cout << "k command" << std::endl;
+		k_command(fdclient, cmd, c_in);
+		return;
 	}
 	else if (op_cmd == "o"){
 		std::cout << "o command" << std::endl;

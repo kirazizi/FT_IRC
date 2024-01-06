@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 23:29:00 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 23:45:17 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class server {
 		void op_commands(int fdclient, std::string cmd, int cmd_num);
 		void i_command(int fdclient, int c_in);
 		void t_command(int fdclient, int c_in);
+		void k_command(int fdclient, std::string cmd, int c_in);
 		void op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in);
 		void send_message(int fdclient, std::string msg);
 };
