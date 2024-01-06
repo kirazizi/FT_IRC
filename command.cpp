@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 19:41:16 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 21:41:17 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ void server::send_prv_msg(int fdclient, std::string cmd){
 
 void server::handle_cmd(std::string cmd, int fdclient){
 	int i = 0;
-	std::string commands[] = {"JOIN", "SWITCH", "LEAVE", "PRIVMSG", "KICK", "INVITE", "TOPIC" "MODE"};
+	std::string commands[] = {"JOIN", "SWITCH", "LEAVE", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE"};
 	while(i < 8){
 		if(get_cmd(cmd) == commands[i])
 			break;
@@ -250,16 +250,16 @@ void server::handle_cmd(std::string cmd, int fdclient){
 			send_prv_msg(fdclient, cmd);
 			break;
 		case 4:
-			op_mode(fdclient, cmd, KICK);
+			op_commands(fdclient, cmd, KICK);
 			break;
 		case 5:
-			op_mode(fdclient, cmd, INVITE);
+			op_commands(fdclient, cmd, INVITE);
 			break;
 		case 6:
-			op_mode(fdclient, cmd, TOPIC);
+			op_commands(fdclient, cmd, TOPIC);
 			break;
 		case 7:
-			op_mode(fdclient, cmd, MODE);
+			op_commands(fdclient, cmd, MODE);
 			break;
 		default:
 			send_message(fdclient, cmd);

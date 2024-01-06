@@ -6,20 +6,59 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/04 18:33:21 by tajjid            #+#    #+#             */
-/*   Updated: 2024/01/06 20:48:34 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 23:29:22 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "client.hpp"
 
-void server::op_commands(int fdclient, std::string cmd, std::string op_cmd){
-	(void)cmd;
+void server::i_command(int fdclient, int c_in){
+
+	if (vec_channels[c_in].is_invite_only == true){
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is no longer invite only\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].is_invite_only = false;
+	}
+	else {
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is now invite only\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].is_invite_only = true;
+	}
+}
+
+void server::t_command(int fdclient, int c_in){
+
+	if (vec_channels[c_in].topic_restrict == true){
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is no longer topic restricted\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].topic_restrict = false;
+	}
+	else {
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is now topic restricted\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].topic_restrict = true;
+	}
+}
+
+// void server::k_command(){
+// }
+
+// void server::o_command(){
+// }
+
+// void server::l_command(){
+// }
+
+void server::op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in){
+
 	if (op_cmd == "i"){
-		std::cout << "i command" << std::endl;
+		i_command(fdclient, c_in);
+		return;
 	}
 	else if (op_cmd == "t"){
-		std::cout << "t command" << std::endl;
+		t_command(fdclient, c_in);
+		return;
 	}
 	else if (op_cmd == "k"){
 		std::cout << "k command" << std::endl;
@@ -127,6 +166,7 @@ void server::invite_client(int fdclient, std::string cmd, size_t c_in){
 
 void server::topic_channel(int fdclient, std::string cmd, size_t c_in){
 	
+	vec_channels[c_in].topic_restrict = true;
 	if (vec_channels[c_in].topic_restrict == false){
 		std::string send_msg = "This channel " + vec_channels[c_in].name + " is not topic restricted\n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
@@ -136,7 +176,12 @@ void server::topic_channel(int fdclient, std::string cmd, size_t c_in){
 	std::string opt = get_second_word(cmd);
 	
 	if (opt == "view"){
-		std:;string send_msg = "The topic of the channel " + vec_channels[c_in].name + " is " + vec_channels[c_in].topic + "\n";
+		if (vec_channels[c_in].topic == ""){
+			std::string send_msg = "The topic of the channel " + vec_channels[c_in].name + " is not set yet\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		std::string send_msg = "The topic of the channel " + vec_channels[c_in].name + " is " + vec_channels[c_in].topic;
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 		return;
 	}
@@ -151,22 +196,22 @@ void server::topic_channel(int fdclient, std::string cmd, size_t c_in){
 		else {
 			std::string send_msg;
 			if (vec_channels[c_in].topic != "")
-				send_msg = "The topic of the channel " + vec_channels[c_in].name + " has been changed from " + vec_channels[c_in].topic + " to " + topic + "\n";
+				send_msg = "The topic of the channel " + vec_channels[c_in].name + " is now " + topic;
 			else
-				send_msg = "The topic of the channel " + vec_channels[c_in].name + " has been set to " + topic + "\n";
+				send_msg = "The topic of the channel " + vec_channels[c_in].name + " has been set to " + topic;
 			vec_channels[c_in].topic = topic;
 			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 			return;
 		}
 	}
-	else (message == ""){
+	else {
 		std::string send_msg = "You have to specify a topic \"view\" or \"set\"\n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 		return;
 	}
 }
 
-void server::op_mode(int fdclient, std::string cmd, int cmd_num){
+void server::op_commands(int fdclient, std::string cmd, int cmd_num){
 
 	size_t i = 0;
 	for(i = 0; i < vec_clients.size(); i++)
@@ -202,7 +247,7 @@ void server::op_mode(int fdclient, std::string cmd, int cmd_num){
 	}
 	else if	(cmd_num == MODE){
 		std::string op_cmd = get_mode_cmd(cmd);
-		op_commands(fdclient, cmd, op_cmd);
+		op_mode(fdclient, cmd, op_cmd, j);
 		return;
 	}
 }

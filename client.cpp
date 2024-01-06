@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 20:46:03 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 21:35:56 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ std::string get_topic(const std::string &msg){
 	pos = msg.find(' ', pos + 1);
 	if (pos != std::string::npos)
 		return msg.substr(pos + 1);
+	return "";
 }
 
 std::string get_cmd(const std::string &msg){
