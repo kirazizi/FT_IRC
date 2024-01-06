@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/04 17:18:46 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/06 19:41:16 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,15 @@ void server::join_channel(int fdclient, std::string cmd){
 	{
 		if (vec_channels[j].name == channel)
 		{
-			if(vec_channels[j].is_client(fdclient))
+			if (vec_channels[j].is_client(fdclient))
 			{
 				std::string send_msg = "You are already in the channel " + channel + "\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else if (vec_channels[j].is_invite_only && !vec_channels[j].is_invited_client(fdclient))
+			{
+				std::string send_msg = "You are not invited to the channel " + channel + "\n";
 				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 				return;
 			}
@@ -140,9 +146,9 @@ void server::send_message(int fdclient, std::string msg){
 			break;
 
 	std::string channel = vec_clients[i].current_channel;
-	if (channel == "" && !vec_clients[i].nickname.empty() && !vec_clients[i].username.empty() && !vec_clients[i].password.empty())
+	if (channel == "" && vec_clients[i].is_connected == true)
 	{
-		std::string send_msg = "Your current channel is not set, please join a channel or switch to one\n";
+		std::string send_msg = "Your current channel is not set, please join a channel or switch to one \n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 		return;
 	}
@@ -224,8 +230,8 @@ void server::send_prv_msg(int fdclient, std::string cmd){
 
 void server::handle_cmd(std::string cmd, int fdclient){
 	int i = 0;
-	std::string commands[] = {"JOIN", "SWITCH", "LEAVE", "PRIVMSG"};
-	while(i < 5){
+	std::string commands[] = {"JOIN", "SWITCH", "LEAVE", "PRIVMSG", "KICK", "INVITE", "TOPIC" "MODE"};
+	while(i < 8){
 		if(get_cmd(cmd) == commands[i])
 			break;
 		i++;
@@ -242,6 +248,18 @@ void server::handle_cmd(std::string cmd, int fdclient){
 			break;
 		case 3:
 			send_prv_msg(fdclient, cmd);
+			break;
+		case 4:
+			op_mode(fdclient, cmd, KICK);
+			break;
+		case 5:
+			op_mode(fdclient, cmd, INVITE);
+			break;
+		case 6:
+			op_mode(fdclient, cmd, TOPIC);
+			break;
+		case 7:
+			op_mode(fdclient, cmd, MODE);
 			break;
 		default:
 			send_message(fdclient, cmd);

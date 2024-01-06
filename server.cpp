@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/02 12:17:27 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/01/05 23:19:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,9 +116,11 @@ void server::identify_client(std::string msg,int fdclient){
             std::cout << target->username << " has joined" << std::endl;
             send(fdclient, "Welcome to chat server\n", 23, 0);
             target->is_connected = 1;
+            return;
         }
         // std::cout << target->nickname << ": " << msg;
     }
+    handle_cmd(msg, fdclient);
     
 }
 
@@ -138,7 +140,6 @@ int server::server_recieve(int fdclient){
     // for(int i = 0; i < (int)vec_clients.size(); i++)
     //     if (vec_clients[i].nickname != "")
     //         std::cout << vec_clients[i].nickname << std::endl;
-    handle_cmd(msg, fdclient);
     
 
     return 0;
