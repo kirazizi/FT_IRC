@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/04 18:33:21 by tajjid            #+#    #+#             */
-/*   Updated: 2024/01/06 23:53:43 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 23:08:14 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,125 @@ void server::k_command(int fdclient, std::string cmd, int c_in){
 	}
 }
 
-// void server::o_command(){
-// }
+void server::o_command(int fdclient, std::string cmd, int c_in){
+	
+	std::string option = get_third_word(cmd);
 
-// void server::l_command(){
-// }
+	if (option == "give"){
+		std::string op_nick = get_user(get_topic(cmd));
+		if (op_nick == ""){
+			std::string send_msg = "You have to specify the user to give operator previlege with \"@\"\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		else {
+			size_t i = 0;
+			for(i = 0; i < vec_clients.size(); i++)
+				if(vec_clients[i].nickname == op_nick)
+					break;
+			if (i == vec_clients.size()){
+				std::string send_msg = "The user " + op_nick + " doesn't exist\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else if (vec_channels[c_in].is_op(vec_clients[i].fd) == true){
+				std::string send_msg = "The user " + op_nick + " is already an operator\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else if (vec_channels[c_in].is_client(vec_clients[i].fd) == false){
+				std::string send_msg = "The user " + op_nick + " is not in the channel\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else {
+				vec_channels[c_in].add_op(vec_clients[i].fd);
+				std::string send_msg = "The user " + op_nick + " is now an operator\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				send_msg = "You are now an operator in the channel " + vec_channels[c_in].name + "\n";
+				send(vec_clients[i].fd, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+		}
+	}
+	else if (option == "take"){
+		std::string op_nick = get_user(get_topic(cmd));
+		if (op_nick == ""){
+			std::string send_msg = "You have to specify the user to take operator previlege with \"@\"\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		else {
+			size_t i = 0;
+			for(i = 0; i < vec_clients.size(); i++)
+				if(vec_clients[i].nickname == op_nick)
+					break;
+			if (i == vec_clients.size()){
+				std::string send_msg = "The user " + op_nick + " doesn't exist\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else if (vec_channels[c_in].is_op(vec_clients[i].fd) == false){
+				std::string send_msg = "The user " + op_nick + " is not an operator\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else if (vec_channels[c_in].is_client(vec_clients[i].fd) == false){
+				std::string send_msg = "The user " + op_nick + " is not in the channel\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+			else {
+				vec_channels[c_in].remove_op(vec_clients[i].fd);
+				std::string send_msg = "The user " + op_nick + " is no longer an operator\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				send_msg = "You are no longer an operator in the channel " + vec_channels[c_in].name + "\n";
+				send(vec_clients[i].fd, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
+		}
+	}
+	else {
+		std::string send_msg = "You have to specify an option \"give\" or \"take\" followed by the nickname of the user\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		return;
+	}
+}
+
+void server::l_command(int fdclient, std::string cmd, int c_in){
+	
+	std::string limit = get_third_word(cmd);
+	std::cout << "limit: " << limit << std::endl;
+	if (vec_channels[c_in].is_limited == false || (vec_channels[c_in].is_limited == true && limit != "")){
+		if (limit.find_first_not_of( "0123456789" ) != std::string::npos){
+			std::string send_msg = "The limit should be a number\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		std::stringstream ss(limit);
+		int limit_num;
+		ss >> limit_num;
+		if (limit == "" || limit_num < 0 || limit_num > 100 || ss.fail()){
+			std::string send_msg = "The limit should be between 0 and 100\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			return;
+		}
+		else {
+			std::string send_msg = "This channel " + vec_channels[c_in].name + " is now limited to " + limit + " users\n";
+			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+			vec_channels[c_in].limit = limit_num;
+			vec_channels[c_in].is_limited = true;
+			return;
+		}
+	}
+	else if (vec_channels[c_in].is_limited == true){
+		std::string send_msg = "This channel " + vec_channels[c_in].name + " is not limited anymore\n";
+		send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+		vec_channels[c_in].limit = 0;
+		vec_channels[c_in].is_limited = false;
+		return;
+	}
+}
 
 void server::op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in){
 
@@ -90,10 +204,12 @@ void server::op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in
 		return;
 	}
 	else if (op_cmd == "o"){
-		std::cout << "o command" << std::endl;
+		o_command(fdclient, cmd, c_in);
+		return;
 	}
 	else if (op_cmd == "l"){
-		std::cout << "l command" << std::endl;
+		l_command(fdclient, cmd, c_in);
+		return;
 	}
 	else
 	{
@@ -117,7 +233,7 @@ void server::kick_client(int fdclient, std::string cmd, size_t c_in){
 				for (size_t j = 0; j < vec_channels[c_in].clients.size(); j++)
 				{
 					if (vec_channels[c_in].clients[j] == kick_fd){
-						vec_channels[c_in].clients.erase(vec_channels[c_in].clients.begin() + j);
+						vec_channels[c_in].remove_client(kick_fd);
 						std::string send_msg = "You have been kicked from the channel " + vec_channels[c_in].name + "\n";
 						send(kick_fd, send_msg.c_str(), send_msg.length(), 0);
 						if (vec_clients[j].current_channel == vec_channels[c_in].name)
@@ -175,7 +291,6 @@ void server::invite_client(int fdclient, std::string cmd, size_t c_in){
 			send(fdclient, send_msg.c_str(), send_msg.length(), 0);
 			return;
 		}
-		
 		vec_channels[c_in].add_invited_client(vec_clients[i].fd);
 		std::string send_msg = "The user " + invite_nick + " has been invited to the channel\n";
 		send(fdclient, send_msg.c_str(), send_msg.length(), 0);

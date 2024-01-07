@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:17 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 20:45:38 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 20:20:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ std::string get_channel(const std::string& str);
 std::string get_user(const std::string& str);
 std::string get_first_word(const std::string& str);
 std::string get_second_word(const std::string& str);
+std::string get_third_word(const std::string& str);
 std::string get_topic(const std::string& str);
 int ft_strlen(char *str);
 

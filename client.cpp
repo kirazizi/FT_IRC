@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 21:35:56 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 23:05:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,34 @@ std::string get_first_word(const std::string &msg){
 
 std::string get_second_word(const std::string &msg){
 	size_t pos = msg.find(' ');
+	if (pos == 0 || pos == std::string::npos)
+		return "";
 	for (size_t i = pos + 1; i < msg.length(); i++)
 	{
-		if (msg[i] == ' ')
+		if (msg[i] == ' ' )
 			return msg.substr(pos + 1, i - pos - 1);
 	}
 	return msg.substr(pos + 1, msg.length() - pos - 2);
 }
 
+std::string get_third_word(const std::string& str)
+{
+	size_t pos = str.find(' ');
+	pos = str.find(' ', pos + 1);
+	if (pos == 0 || pos == std::string::npos)
+		return "";
+	for (size_t i = pos + 1; i < str.length(); i++)
+	{
+		if (str[i] == ' ')
+			return str.substr(pos + 1, i - pos - 1);
+	}
+	return str.substr(pos + 1, str.length() - pos - 2);
+}
+
 std::string get_topic(const std::string &msg){
 	size_t pos = msg.find(' ');
 	pos = msg.find(' ', pos + 1);
-	if (pos != std::string::npos)
+	if (pos != std::string::npos && pos != 0)
 		return msg.substr(pos + 1);
 	return "";
 }
@@ -89,12 +105,13 @@ std::string get_channel(const std::string& str)
 			}
 		}
 	}
+	channel.erase(std::remove(channel.begin(), channel.end(), '\n'), channel.end());
 	return channel;
 }
 
 std::string get_user(const std::string& str)
 {
-	std::string channel = "";
+	std::string user = "";
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] == '@')
@@ -103,12 +120,13 @@ std::string get_user(const std::string& str)
 			for (size_t j = i; j < str.length(); j++)
 			{
 				if (str[j] == ' ')
-					return channel;
-				channel += str[j];
+					return user;
+				user += str[j];
 			}
 		}
 	}
-	return channel;
+	user.erase(std::remove(user.begin(), user.end(), '\n'), user.end());
+	return user;
 }
 
 int ft_strlen(char *str){

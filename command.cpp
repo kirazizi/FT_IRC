@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/06 23:57:19 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 21:58:41 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,12 @@ void server::join_channel(int fdclient, std::string cmd){
 	{
 		if (vec_channels[j].name == channel)
 		{
+			if (vec_channels[j].is_limited && vec_channels[j].clients.size() >= (size_t)vec_channels[j].limit)
+			{
+				std::string send_msg = "The channel " + vec_channels[j].name + " is full\n";
+				send(fdclient, send_msg.c_str(), send_msg.length(), 0);
+				return;
+			}
 			if (vec_channels[j].is_client(fdclient))
 			{
 				std::string send_msg = "You are already in the channel " + channel + "\n";

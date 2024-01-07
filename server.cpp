@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/05 23:19:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 20:17:55 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,8 @@ void server::identify_client(std::string msg,int fdclient){
             return;
         }
         // std::cout << target->nickname << ": " << msg;
+        handle_cmd(msg, fdclient);
     }
-    handle_cmd(msg, fdclient);
     
 }
 

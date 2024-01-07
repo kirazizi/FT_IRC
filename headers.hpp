@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:07:37 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/02 17:01:59 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/01/07 21:31:04 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sstream>
 
 
 #endif
