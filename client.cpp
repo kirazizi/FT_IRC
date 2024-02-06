@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/07 23:05:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/06 19:21:08 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ std::string get_cmd(const std::string &msg){
 	size_t pos = msg.find(' ');
 	if (pos != std::string::npos)
 		return msg.substr(0, pos);
-	return msg.substr(0, msg.length() - 1);
+	return msg.substr(0, msg.length());
 }
 
 std::string get_mode_cmd(const std::string &msg){

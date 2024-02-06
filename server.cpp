@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/07 20:17:55 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/06 21:41:06 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ void server::server_accept(int fdsocket){
 
     class client obj_client(fdclient);
     vec_clients.push_back(obj_client);
+    std::cout << vec_clients.size() << std::endl;
 }
 
 void server::identify_client(std::string msg,int fdclient){
@@ -104,11 +105,13 @@ void server::identify_client(std::string msg,int fdclient){
     }
     else if(cmd == "NICK" && value != ""){
         // check if nickname is already taken
-        for (size_t i = 0; i < vec_clients.size(); i++)
+        for (size_t i = 0; i < vec_clients.size(); i++){
+
             if (vec_clients[i].nickname == value){
                 send(fdclient, "Nickname already taken please try again!\n", 41, 0);
                 return;
             }
+        }
         target->nickname = value;
     }
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
@@ -118,7 +121,6 @@ void server::identify_client(std::string msg,int fdclient){
             target->is_connected = 1;
             return;
         }
-        // std::cout << target->nickname << ": " << msg;
         handle_cmd(msg, fdclient);
     }
     
@@ -133,14 +135,14 @@ int server::server_recieve(int fdclient){
         exit(1);
     }
     if (rcv == 0){
-        std::cout << "Client disconnected" << std::endl;
+        std::cout << "disconnecing ..." << std::endl;
+        vec_clients[fdclient].fd = -1;
         return 1;
     }
     identify_client(msg, fdclient);
     // for(int i = 0; i < (int)vec_clients.size(); i++)
     //     if (vec_clients[i].nickname != "")
     //         std::cout << vec_clients[i].nickname << std::endl;
-    
 
     return 0;
 }
@@ -168,8 +170,10 @@ void server::server_polling(int fdsocket){
                 if(vpoll[i].fd == fdsocket)
                     server_accept(fdsocket);
                 else
-                    if(server_recieve(vpoll[i].fd))
+                    if(server_recieve(vpoll[i].fd)){
                         vpoll.erase(vpoll.begin() + i);
+                        vec_clients.erase(vec_clients.begin() + (i -1));
+                    }
             }
         }
     }
