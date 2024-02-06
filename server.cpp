@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/07 20:17:55 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/06 15:05:44 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,11 +116,13 @@ void server::identify_client(std::string msg,int fdclient){
             std::cout << target->username << " has joined" << std::endl;
             send(fdclient, "Welcome to chat server\n", 23, 0);
             target->is_connected = 1;
+            // map_clients.insert(std::pair<int, client>(target->fd, *target));
+            map_clients[target->nickname] = *target;
             return;
         }
         // std::cout << target->nickname << ": " << msg;
-        handle_cmd(msg, fdclient);
     }
+    handle_cmd(msg, fdclient);
     
 }
 
@@ -136,6 +138,7 @@ int server::server_recieve(int fdclient){
         std::cout << "Client disconnected" << std::endl;
         return 1;
     }
+    std::cout << "Client: " << msg;
     identify_client(msg, fdclient);
     // for(int i = 0; i < (int)vec_clients.size(); i++)
     //     if (vec_clients[i].nickname != "")

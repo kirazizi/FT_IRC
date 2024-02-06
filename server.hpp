@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/07 20:25:51 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/06 19:57:37 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,15 @@
 #define TOPIC 3
 #define MODE 4
 
-class Channel;
+class channel;
 
 class server {
 	public:
 		std::vector<int> clientfds;
 		std::vector<pollfd> vpoll;
 		std::vector<client> vec_clients;
-		std::vector<Channel> vec_channels;
+		std::map<std::string, client> map_clients;
+		std::map<std::string, channel> map_channels;
 
 		int port;
 		std::string srv_pass;
@@ -41,21 +42,17 @@ class server {
 		int  server_recieve(int fdclient);
 		void identify_client(std::string msg,int fdclient);
 		void handle_cmd(std::string msg, int fdclient);
-		void join_channel(int fdclient, std::string cmd);
-		void switch_channel(int fdclient, std::string cmd);
-		void leave_channel(int fdclient, std::string cmd);
-		void send_prv_msg(int fdclient, std::string cmd);
-		void kick_client(int fdclient, std::string cmd, size_t c_in);
-		void invite_client(int fdclient, std::string cmd, size_t c_in);
-		void topic_channel(int fdclient, std::string cmd, size_t c_in);
-		void op_commands(int fdclient, std::string cmd, int cmd_num);
-		void i_command(int fdclient, int c_in);
-		void t_command(int fdclient, int c_in);
-		void k_command(int fdclient, std::string cmd, int c_in);
-		void o_command(int fdclient, std::string cmd, int c_in);
-		void l_command(int fdclient, std::string cmd, int c_in);
-		void op_mode(int fdclient, std::string cmd, std::string op_cmd, int c_in);
-		void send_message(int fdclient, std::string msg);
+		void join_cmd(std::string msg, int fdclient);
+		void privmsg_cmd(std::string msg, int fdclient);
+	
+
+		/*			JOIN FUNCTIONS			*/
+		void join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient, std::string msg);
+		void join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient);
+		std::string get_clients_names(std::vector<std::pair<int, std::string> > clients);
+
+		/*			PRIVMSG FUNCTIONS		*/
+		void send_privmsgs(std::vector<std::string> users, std::string message, int fdclient, std::string msg);
 };
 
 #endif
