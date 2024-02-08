@@ -13,7 +13,7 @@
 // {
 //     (void)ac;
 //     // get port number
-//     int port = atoi(av[1]);
+//     int port = std::atoi(av[1]);
 
 //     // creat a socket
 //     int fdsocket = socket(AF_INET, SOCK_STREAM, 0);

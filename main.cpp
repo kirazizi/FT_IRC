@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 13:21:55 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/01/01 16:14:18 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/08 10:43:56 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main(int ac, char **av){
     if (av[2])
         password = av[2];
 
-    int port = atoi(av[1]);
+    int port = std::atoi(av[1]);
 
     // parsing input
     parsing.parsing_input(port, password);

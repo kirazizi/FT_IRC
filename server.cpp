@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/07 18:44:49 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/08 13:13:26 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,18 +85,19 @@ void server::identify_client(std::string msg,int fdclient){
     std::string cmd = get_cmd(msg);
     std::string value = get_value(msg);
     client *target = NULL;
-    std::cout << "msg: " << msg << std::endl;
+    
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
     if (target == NULL)
         return;
     if(cmd == "USER" && value != ""){
-        std::cout << "user" << std::endl;
+        int space = value.find(' ');
+        if (value.find(' ') != std::string::npos)
+            value = value.substr(0, space);
         target->username = value;
     }
     else if(cmd == "PASS" && value != ""){
-        std::cout << "pass" << std::endl;
         // check password
         if (this->srv_pass != value){
             send(fdclient, "Wrong password please try again!\n", 33, 0);
@@ -105,7 +106,6 @@ void server::identify_client(std::string msg,int fdclient){
         target->password = value;
     }
     else if(cmd == "NICK" && value != ""){
-        std::cout << "nick" << std::endl;
         // check if nickname is already taken
         for (size_t i = 0; i < vec_clients.size(); i++){
             if (vec_clients[i].nickname == value){
@@ -113,13 +113,16 @@ void server::identify_client(std::string msg,int fdclient){
                 return;
             }
         }
+        if (value.find(' ') != std::string::npos){
+            send(fdclient, "Nickname cannot contain space please try again!\n", 48, 0);
+            return;
+        }
         target->nickname = value;
     }
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
-        std::cout << "wew" << std::endl;
         if(!target->is_connected){
             std::cout << target->username << " has joined" << std::endl;
-                          ;
+            send(fdclient, "Welcome to chat server\n", 23, 0);
             target->is_connected = 1;
             // map_clients.insert(std::pair<int, client>(target->fd, *target));
             map_clients[target->nickname] = *target;
@@ -132,16 +135,13 @@ void server::identify_client(std::string msg,int fdclient){
 
 void split_cmd(std::string &msg){
     // i want to split this buffer with /r/n
-
     std::string delimiter = "\r\n";
     size_t pos = 0;
     std::string token;
     while ((pos = msg.find(delimiter)) != std::string::npos){
-        std::cout << "pos: " << pos << std::endl;
         token = msg.substr(0, pos);
         msg.erase(0, pos + delimiter.length());
     }
-    std::cout << "token: " << token << std::endl;
 }
 
 int server::server_recieve(int fdclient){
@@ -157,8 +157,15 @@ int server::server_recieve(int fdclient){
         return 1;
     }
     // std::cout << "Client: " << msg;
-    // std::string str_msg = msg;
     // split_cmd(str_msg);
+    // std::string str_msg = msg;
+    // std::string new_msg;
+    // for(int i = 0; i < (int)str_msg.length(); i++){
+    //     if (str_msg[i] == '\r' || str_msg[i +1] == '\n'){
+            
+    // }
+    // std::cout << "client: "<< new_msg << std::endl;
+    // std::cout << "client: "<< str_msg << std::endl;
     identify_client(msg, fdclient);
     // for(int i = 0; i < (int)vec_clients.size(); i++)
     //     if (vec_clients[i].nickname != "")
