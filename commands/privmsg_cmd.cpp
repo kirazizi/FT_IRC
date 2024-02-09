@@ -6,19 +6,18 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/06 20:02:33 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/08 13:21:46 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 #include "../client.hpp"
 
-void server::send_privmsgs(std::vector<std::string> users, std::string message, int fdclient, std::string msg){
+void server::send_privmsgs(std::vector<std::string> users, std::string message, int fdclient){
 	std::string channel_name;
 	std::string joined_name;
 	std::string client_name;
 	std::string client_nick;
-	std::string cmd = get_cmd(msg);
 	std::string reply;
 
 	for (size_t i = 0; i < vec_clients.size(); i++)
@@ -36,8 +35,6 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "401", client_nick , channel_name, "No such channel");
 			}
 			else if (!map_channels[channel_name].is_client(fdclient)){
-				
-				std::cout << "--------channel_name: " << channel_name << "client fd: " << fdclient << "--------\n";
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
 			}
 			else {
@@ -65,7 +62,6 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 void server::privmsg_cmd(std::string msg, int fdclient){
 	std::vector<std::string> users;
 	std::string param;
-	std::string cmd = get_cmd(msg);
 	std::string message = get_value(msg);
 	std::string users_name = message.substr(0,message.find(' '));
 
@@ -80,10 +76,10 @@ void server::privmsg_cmd(std::string msg, int fdclient){
 		users.push_back(param);
 
 	if (users.size() == 0)
-		error_reply(fdclient, "411", cmd, "", "No recipient given");
+		error_reply(fdclient, "411", "JOIN", "", "No recipient given");
 	else if (message == "")
-		error_reply(fdclient, "412", cmd, "", "No text to send");
+		error_reply(fdclient, "412", "JOIN", "", "No text to send");
 	else
-		send_privmsgs(users, message, fdclient, msg);
+		send_privmsgs(users, message, fdclient);
 
 }

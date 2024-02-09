@@ -3,21 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/07 18:47:26 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/09 16:35:39 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 #include "headers.hpp"
+#include "server.hpp"
 
 std::string get_cmd(const std::string &msg){
 	size_t pos = msg.find(' ');
-	if (pos != std::string::npos)
+	if (pos != std::string::npos){
 		return msg.substr(0, pos);
-	return msg.substr(0, msg.length());
+	}
+	std::string cmd = msg.substr(0, pos);
+	cmd.erase(std::remove(cmd.begin(), cmd.end(), '\r'), cmd.end());
+	cmd.erase(std::remove(cmd.begin(), cmd.end(), '\n'), cmd.end());
+	return cmd;
 }
 
 std::string get_mode_cmd(const std::string &msg){
@@ -51,6 +56,7 @@ int ft_strlen(char *str){
 
 void error_reply(int fdclient, std::string code_error, std::string nick_name, std::string value, std::string msg){
 	std::string reply;
-	reply = ":" + std::string("myirc.1337.ma") + " " + code_error + " " + nick_name + " " + value + " :" + msg + "\n";
+	std::string host_post = host();
+	reply = ":" + host_post + " " + code_error + " " + nick_name + " " + value + " :" + msg + "\n";
 	send(fdclient, reply.c_str(), reply.length(), 0);
 }

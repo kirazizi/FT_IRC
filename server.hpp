@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/08 14:00:29 by sbzizal          ###   ########.fr       */
+/*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
+/*   Updated: 2024/02/09 16:25:53 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,20 @@ class server {
 		void handle_cmd(std::string msg, int fdclient);
 		void join_cmd(std::string msg, int fdclient);
 		void privmsg_cmd(std::string msg, int fdclient);
+		void kick_cmd(std::string msg, int fdclient);
 	
 
 		/*			JOIN FUNCTIONS			*/
-		void join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient, std::string msg);
+		void join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient);
 		void join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient);
 		std::string get_clients_names(std::vector<std::pair<int, std::string> > clients);
 
 		/*			PRIVMSG FUNCTIONS		*/
-		void send_privmsgs(std::vector<std::string> users, std::string message, int fdclient, std::string msg);
+		void send_privmsgs(std::vector<std::string> users, std::string message, int fdclient);
+
+		/*			KICK FUNCTIONS			*/
+		void kick_users(std::string channel_name, std::vector<std::string> users, std::string reason, int fdclient);
 };
 
+std::string host();
 #endif
