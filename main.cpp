@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 13:21:55 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/08 10:43:56 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/08 13:47:32 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "parsing.hpp"
 
 int main(int ac, char **av){
-    
     parsing parsing;
     std::string password;
     int fdsocket;
