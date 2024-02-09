@@ -6,16 +6,12 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/08 13:13:26 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/09 15:00:07 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
-
-// send(fdclient, "please identify yourself\n", 25, 0);
-// send(fdclient, "USER <username>\n", 16, 0);
-// send(fdclient, "PASS <password>\n", 16, 0);
-// send(fdclient, "NICK <nickname>\n", 17, 0);
+#include <fstream>
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
@@ -81,27 +77,49 @@ void server::server_accept(int fdsocket){
     vec_clients.push_back(obj_client);
 }
 
+std::string host(){
+    system("hostname > /tmp/host.txt");
+    std::ifstream file("/tmp/host.txt");
+    std::string host;
+    std::getline(file, host);
+    file.close();
+    return host;
+}
+
+void ft_send(int fdclient, std::string msg){
+    send(fdclient, msg.c_str(), msg.length(), 0);
+}
+
+void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg){
+    (void)nick;
+    std::string prefix = host();
+    std::string response = ":" + prefix + " " + cmd + " " + nick + " :" + msg + "\r\n";
+    ft_send(fdclient, response);
+}
+
 void server::identify_client(std::string msg,int fdclient){
-    std::string cmd = get_cmd(msg);
-    std::string value = get_value(msg);
+    std::stringstream ss(msg);
     client *target = NULL;
-    
+    std::string cmd;
+    std::string value;
+    std::string param;
+    ss >> cmd;
+    ss >> value;
+    ss >> param;
+
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
     if (target == NULL)
         return;
     if(cmd == "USER" && value != ""){
-        int space = value.find(' ');
-        if (value.find(' ') != std::string::npos)
-            value = value.substr(0, space);
         target->username = value;
     }
     else if(cmd == "PASS" && value != ""){
         // check password
         if (this->srv_pass != value){
-            send(fdclient, "Wrong password please try again!\n", 33, 0);
-            return;
+            msg_format(fdclient, "464", value , "Wrong password please try again!");
+            return ;
         }
         target->password = value;
     }
@@ -109,40 +127,44 @@ void server::identify_client(std::string msg,int fdclient){
         // check if nickname is already taken
         for (size_t i = 0; i < vec_clients.size(); i++){
             if (vec_clients[i].nickname == value){
-                send(fdclient, "Nickname already taken please try again!\n", 41, 0);
-                return;
+                msg_format(fdclient, "433", "+_+" , "Nickname already taken please try again!");
+                return ;
             }
         }
-        if (value.find(' ') != std::string::npos){
-            send(fdclient, "Nickname cannot contain space please try again!\n", 48, 0);
-            return;
+        if (param != ""){
+            msg_format(fdclient, "432", "+_+" , "Nickname cannot contain space please try again!");
+            return ;
         }
         target->nickname = value;
     }
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
         if(!target->is_connected){
-            std::cout << target->username << " has joined" << std::endl;
-            send(fdclient, "Welcome to chat server\n", 23, 0);
+            std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
+            msg_format(fdclient, "001", target->nickname, "Welcome to chat server");
+            msg_format(fdclient, "002", target->nickname, "Your host is e3r8p2.1337.ma, running version 1.2");
             target->is_connected = 1;
-            // map_clients.insert(std::pair<int, client>(target->fd, *target));
             map_clients[target->nickname] = *target;
             return;
         }
-        // std::cout << target->nickname << ": " << msg;
-        handle_cmd(msg, fdclient);
-    }    
-}
-
-void split_cmd(std::string &msg){
-    // i want to split this buffer with /r/n
-    std::string delimiter = "\r\n";
-    size_t pos = 0;
-    std::string token;
-    while ((pos = msg.find(delimiter)) != std::string::npos){
-        token = msg.substr(0, pos);
-        msg.erase(0, pos + delimiter.length());
+        // handle_cmd(msg, fdclient);
     }
 }
+
+// void split_cmd(std::string &msg){
+//     // i want to split this buffer with /r/n
+//     std::string delimiter = "\r\n";
+//     std::string delimiter2 = "\n";
+//     size_t pos = 0;
+//     std::string token;
+//     while ((pos = msg.find(delimiter)) != std::string::npos) {
+//         token = msg.substr(0, pos);
+//         msg.erase(0, pos + delimiter.length());
+//     }
+//     while ((pos = msg.find(delimiter2)) != std::string::npos) {
+//         token = msg.substr(0, pos);
+//         msg.erase(0, pos + delimiter2.length());
+//     }
+// }
 
 int server::server_recieve(int fdclient){
     char msg[1024];
@@ -156,28 +178,22 @@ int server::server_recieve(int fdclient){
         std::cout << "\033[31m" << "disconnecing ..." << "\033[0m" << std::endl;
         return 1;
     }
-    // std::cout << "Client: " << msg;
-    // split_cmd(str_msg);
-    // std::string str_msg = msg;
-    // std::string new_msg;
-    // for(int i = 0; i < (int)str_msg.length(); i++){
-    //     if (str_msg[i] == '\r' || str_msg[i +1] == '\n'){
-            
-    // }
-    // std::cout << "client: "<< new_msg << std::endl;
-    // std::cout << "client: "<< str_msg << std::endl;
-    identify_client(msg, fdclient);
-    // for(int i = 0; i < (int)vec_clients.size(); i++)
-    //     if (vec_clients[i].nickname != "")
-    //         std::cout << vec_clients[i].nickname << std::endl;
-
+    this->buffer += msg;
+    if (buffer.find("\n") == std::string::npos)
+        return 0;
+    std::cout << buffer;
+    if (vec_clients[fdclient].is_connected == 0){
+        identify_client(buffer, fdclient);
+    }
+    handle_cmd(buffer, fdclient);
+    buffer.clear();
     return 0;
 }
 
 void server::server_polling(int fdsocket){
     
     struct pollfd srvpoll;
-    
+
     srvpoll.fd = fdsocket;
     srvpoll.events = POLLIN;
     srvpoll.revents = 0;

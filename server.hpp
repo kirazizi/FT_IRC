@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:05:49 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/06 19:57:37 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/08 14:00:29 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class server {
 		std::vector<client> vec_clients;
 		std::map<std::string, client> map_clients;
 		std::map<std::string, channel> map_channels;
+		std::string buffer;
 
 		int port;
 		std::string srv_pass;
