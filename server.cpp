@@ -6,12 +6,11 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/09 15:00:07 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/10 16:11:43 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
-#include <fstream>
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
@@ -110,7 +109,7 @@ void server::identify_client(std::string msg,int fdclient){
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
-    if (target == NULL)
+    if (target == NULL || target->is_connected == 1)
         return;
     if(cmd == "USER" && value != ""){
         target->username = value;
@@ -150,22 +149,6 @@ void server::identify_client(std::string msg,int fdclient){
     }
 }
 
-// void split_cmd(std::string &msg){
-//     // i want to split this buffer with /r/n
-//     std::string delimiter = "\r\n";
-//     std::string delimiter2 = "\n";
-//     size_t pos = 0;
-//     std::string token;
-//     while ((pos = msg.find(delimiter)) != std::string::npos) {
-//         token = msg.substr(0, pos);
-//         msg.erase(0, pos + delimiter.length());
-//     }
-//     while ((pos = msg.find(delimiter2)) != std::string::npos) {
-//         token = msg.substr(0, pos);
-//         msg.erase(0, pos + delimiter2.length());
-//     }
-// }
-
 int server::server_recieve(int fdclient){
     char msg[1024];
     memset(msg, 0, 1024);
@@ -175,16 +158,13 @@ int server::server_recieve(int fdclient){
         exit(1);
     }
     if (rcv == 0){
-        std::cout << "\033[31m" << "disconnecing ..." << "\033[0m" << std::endl;
         return 1;
     }
     this->buffer += msg;
     if (buffer.find("\n") == std::string::npos)
         return 0;
     std::cout << buffer;
-    if (vec_clients[fdclient].is_connected == 0){
-        identify_client(buffer, fdclient);
-    }
+    identify_client(buffer, fdclient);
     handle_cmd(buffer, fdclient);
     buffer.clear();
     return 0;
@@ -214,8 +194,7 @@ void server::server_polling(int fdsocket){
                     server_accept(fdsocket);
                 else
                     if(server_recieve(vpoll[i].fd)){
-                        vpoll.erase(vpoll.begin() + i);
-                        vec_clients.erase(vec_clients.begin() + (i -1));
+                        quit_cmd("Leaving...", vpoll[i].fd);
                     }
             }
         }
