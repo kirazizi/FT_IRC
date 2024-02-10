@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/09 20:35:21 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/10 20:06:27 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ std::string server::get_clients_names(std::vector<std::pair<int, std::string> > 
 void server::join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient){
 	std::string reply;
 	std::string host_post = host();
-	reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\n";
-	send(fdclient, reply.c_str(), reply.size(), 0);
-	reply = ":" + host_post + " 332 " + client_nick + " " + channel_name + " :" + map_channels[channel_name].topic + "\n";
+	reply += ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\r\n";
+	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " :" + map_channels[channel_name].topic + "\n";
 	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + get_clients_names(map_channels[channel_name].clients) + "\n";
 	reply += ":" + host_post + " 366 " + client_nick + " = " + channel_name + " :" + "End of /NAMES list." + "\n";
 	send(fdclient, reply.c_str(), reply.size(), 0);
@@ -53,7 +52,7 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		channel_name = channels[i];
-		if (channel_name[0] != '#' || channel_name == "#"){
+		if (channel_name[0] != '#'){
 			error_reply(fdclient, "403", "JOIN " + client_nick, channel_name, "Bad channel name");
 			continue;
 		}
@@ -90,7 +89,7 @@ void server::join_cmd(std::string msg, int fdclient){
 	std::vector<std::string> keys;
 	std::string param;
 
-	if (get_value(msg) == "")
+	if (get_value(msg) == "" || get_value(msg) == "#")
 	{
 		error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
 		return;
