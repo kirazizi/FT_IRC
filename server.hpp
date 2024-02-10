@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/09 16:25:53 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/09 19:19:34 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,21 +43,27 @@ class server {
 		int  server_recieve(int fdclient);
 		void identify_client(std::string msg,int fdclient);
 		void handle_cmd(std::string msg, int fdclient);
-		void join_cmd(std::string msg, int fdclient);
-		void privmsg_cmd(std::string msg, int fdclient);
-		void kick_cmd(std::string msg, int fdclient);
 	
 
 		/*			JOIN FUNCTIONS			*/
+		void join_cmd(std::string msg, int fdclient);
 		void join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient);
 		void join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient);
 		std::string get_clients_names(std::vector<std::pair<int, std::string> > clients);
 
 		/*			PRIVMSG FUNCTIONS		*/
+		void privmsg_cmd(std::string msg, int fdclient);
 		void send_privmsgs(std::vector<std::string> users, std::string message, int fdclient);
 
+		/*			QUIT FUNCTIONS			*/
+		void quit_cmd(std::string msg, int fdclient);
+
 		/*			KICK FUNCTIONS			*/
+		void kick_cmd(std::string msg, int fdclient);
 		void kick_users(std::string channel_name, std::vector<std::string> users, std::string reason, int fdclient);
+
+		/*			INVITE FUNCTIONS		*/
+		void invite_cmd(std::string msg, int fdclient);
 };
 
 std::string host();

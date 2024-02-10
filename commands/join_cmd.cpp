@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/09 16:27:10 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/09 20:35:21 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		channel_name = channels[i];
-		if (channel_name[0] != '#'){
+		if (channel_name[0] != '#' || channel_name == "#"){
 			error_reply(fdclient, "403", "JOIN " + client_nick, channel_name, "Bad channel name");
 			continue;
 		}
@@ -67,6 +67,8 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 			continue;
 		}
 		map_channels[channel_name].add_client(fdclient, client_nick);
+		if (map_channels[channel_name].op_clients.size() == 0)
+			map_channels[channel_name].add_op(fdclient);
 		join_channel_msg(channel_name, client_name, client_nick, fdclient);
 	
 		int client_fd;
@@ -93,6 +95,11 @@ void server::join_cmd(std::string msg, int fdclient){
 		error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
 		return;
 	}
+	else if (get_value(msg).size() > 50)
+	{
+		error_reply(fdclient, "405", "JOIN", get_value(msg), "Channel name is too long");
+		return;
+	}
 	while (std::getline(split, param, ','))
 	{
 		if (param.find(' ') != std::string::npos)
@@ -101,10 +108,24 @@ void server::join_cmd(std::string msg, int fdclient){
 			channels.push_back(temp);
 			keys.push_back(param.substr(param.find(' ') + 1));
 			while (std::getline(split, param, ','))
+			{
+				if (param.find(' ') != std::string::npos)
+				{
+					temp = param.substr(0, param.find(' '));
+					keys.push_back(temp);
+					break;
+				}
 				keys.push_back(param);
+			}
 			break;
 		}
 		channels.push_back(param);
 	}
+	// for (size_t i = 0; i < channels.size(); i++)
+	// 	std::cout << "channels: " << channels[i] << std::endl;
+	
+	// for (size_t i = 0; i < keys.size(); i++)
+	// 	std::cout << "keys: " << keys[i] << std::endl;
+	
 	join_the_channels(channels, keys, fdclient);
 }

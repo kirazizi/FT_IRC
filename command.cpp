@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/09 16:21:48 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/10 15:58:33 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,16 @@ void server::handle_cmd(std::string msg, int fdclient){
 			join_cmd(msg, fdclient);
 			break;
 		case 1:
+			quit_cmd(msg, fdclient);
 			break;
 		case 2:
 			privmsg_cmd(msg, fdclient);
 			break;
 		case 3:
-			// kick_cmd(msg, fdclient);
+			kick_cmd(msg, fdclient);
 			break;
 		case 4:
+			// invite_cmd(msg, fdclient);
 			break;
 		case 5:
 			break;
