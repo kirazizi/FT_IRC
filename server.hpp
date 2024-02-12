@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/10 16:02:33 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/12 12:42:13 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class server {
 		std::map<std::string, client> map_clients;
 		std::map<std::string, channel> map_channels;
 		std::string buffer;
+		// std::string reply;
 
 		int port;
 		std::string srv_pass;
@@ -64,6 +65,9 @@ class server {
 
 		/*			INVITE FUNCTIONS		*/
 		void invite_cmd(std::string msg, int fdclient);
+
+		/*			TOPIC FUNCTIONS			*/
+		void topic_cmd(std::string msg, int fdclient);
 };
 
 std::string host();

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/10 22:04:46 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/12 12:39:35 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,7 @@ void server::invite_cmd(std::string msg, int fdclient){
        map_channels[channel_name].add_invited_client(map_clients[invited_name].fd);
         reply = ":" + host() + " " + std::string("341") + " " + client_nick + " " + invited_name + " " + channel_name + "\n";
         send(fdclient, reply.c_str(), reply.size(), 0);
+        reply = ":" + client_nick + " " + "INVITE" + " " + invited_name + " " + channel_name + "\n";
+        send(fdinvited, reply.c_str(), reply.size(), 0);
     }
-
-    // for (size_t i = 0; i < map_channels[channel_name].invited_clients.size(); i++){
-    //     std::cout << "Invited clients: " << map_channels[channel_name].invited_clients[i] << std::endl;
-    // }
 }

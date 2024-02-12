@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 19:01:18 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/06 12:11:31 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/12 18:41:18 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class channel{
 		int limit;
 		
 		bool topic_restrict;
-		std::string topic;
+		std::pair<std::string, std::string> topic;
 		
 		channel(){};
 		channel(std::string name);
