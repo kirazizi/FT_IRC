@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/12 19:20:05 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/12 21:23:34 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,44 +88,65 @@ void server::join_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
-	std::string param;
+    std::stringstream value;
+    std::string value_str;
 
-	if (get_value(msg) == "" || get_value(msg) == "#")
-	{
-		error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
-		return;
-	}
-	else if (get_value(msg).size() > 50)
-	{
-		error_reply(fdclient, "405", "JOIN", get_value(msg), "Channel name is too long");
-		return;
-	}
-	while (std::getline(split, param, ','))
-	{
-		if (param.find(' ') != std::string::npos)
-		{
-			std::string temp = param.substr(0, param.find(' '));
-			channels.push_back(temp);
-			keys.push_back(param.substr(param.find(' ') + 1));
-			while (std::getline(split, param, ','))
-			{
-				if (param.find(' ') != std::string::npos)
-				{
-					temp = param.substr(0, param.find(' '));
-					keys.push_back(temp);
-					break;
-				}
-				keys.push_back(param);
-			}
-			break;
-		}
-		channels.push_back(param);
-	}
+    split >> value_str;
+    value << value_str;
+    std::cout << "value_str1: " << value_str << std::endl;
+    if (value_str == "" || value_str == "#")
+    {
+        error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
+        return;
+    }
+
+	std::string param;
+    while (std::getline(value, param, ','))
+        channels.push_back(param);
+    
+    split >> value_str;
+    std::cout << "value_str2: " << value_str << std::endl;
+    value.clear();
+    value << value_str;
+
+    while (std::getline(value, param, ','))
+        keys.push_back(param);
+
+    join_the_channels(channels, keys, fdclient);
 	// for (size_t i = 0; i < channels.size(); i++)
 	// 	std::cout << "channels: " << channels[i] << std::endl;
-	
 	// for (size_t i = 0; i < keys.size(); i++)
 	// 	std::cout << "keys: " << keys[i] << std::endl;
-	
-	join_the_channels(channels, keys, fdclient);
+	// if (get_value(msg) == "" || get_value(msg) == "#")
+	// {
+	// 	error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
+	// 	return;
+	// }
+	// else if (get_value(msg).size() > 50)
+	// {
+	// 	error_reply(fdclient, "405", "JOIN", get_value(msg), "Channel name is too long");
+	// 	return;
+	// }
+	// while (std::getline(split, param, ','))
+	// {
+	// 	if (param.find(' ') != std::string::npos)
+	// 	{
+	// 		std::string temp = param.substr(0, param.find(' '));
+	// 		channels.push_back(temp);
+	// 		keys.push_back(param.substr(param.find(' ') + 1));
+	// 		while (std::getline(split, param, ','))
+	// 		{
+	// 			if (param.find(' ') != std::string::npos)
+	// 			{
+	// 				temp = param.substr(0, param.find(' '));
+	// 				keys.push_back(temp);
+	// 				break;
+	// 			}
+	// 			keys.push_back(param);
+	// 		}
+	// 		break;
+	// 	}
+	// 	channels.push_back(param);
+	// }
+	// join_the_channels(channels, keys, fdclient);
 }

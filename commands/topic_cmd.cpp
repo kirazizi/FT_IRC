@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/12 19:29:28 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/12 19:30:11 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void server::topic_cmd(std::string msg, int fdclient){
 		}
 
 	split >> channel_name;
-	map_channels[channel_name].topic_restrict = true;
 
 	if (channel_name.empty() || channel_name == ":" || channel_name == "#"){
 		error_reply(fdclient, "461", "TOPIC", "", "Not enough parameters");

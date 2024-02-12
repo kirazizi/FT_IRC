@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/09 16:55:06 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/12 21:24:53 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void server::kick_users(std::string channel_name, std::vector<std::string> users
 		}
 	}
 }
-// :taha KICK #mama yahya
+
 void server::kick_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));
 	std::vector<std::string> users;
