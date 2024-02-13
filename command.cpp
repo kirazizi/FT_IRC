@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/12 19:34:44 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/13 18:24:10 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void server::handle_cmd(std::string msg, int fdclient){
 			join_cmd(msg, fdclient);
 			break;
 		case 1:
-			// part_cmd(msg, fdclient);
+			part_cmd(msg, fdclient);
+            break;
 		case 2:
 			quit_cmd(msg, fdclient);
 			break;
@@ -43,8 +44,10 @@ void server::handle_cmd(std::string msg, int fdclient){
 			topic_cmd(msg, fdclient);
 			break;
 		case 7:
+            mode_cmd(msg, fdclient);
 			break;
 		default:
+            // error_reply(fdclient, "421", "SERVER", get_cmd(msg), "Unknown command");
 			break;
 	}
 }

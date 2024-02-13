@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/08 13:21:46 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/13 12:24:45 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 		if (users[i][0] == '#') {
 			channel_name = users[i];
 			if (map_channels.find(channel_name) == map_channels.end()){
-				error_reply(fdclient, "401", client_nick , channel_name, "No such channel");
+				error_reply(fdclient, "401", client_nick , "\"" + channel_name + "\"", "No such channel");
 			}
 			else if (!map_channels[channel_name].is_client(fdclient)){
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
@@ -60,26 +60,34 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 }
 
 void server::privmsg_cmd(std::string msg, int fdclient){
+
+	std::stringstream split(get_value(msg));
 	std::vector<std::string> users;
-	std::string param;
-	std::string message = get_value(msg);
-	std::string users_name = message.substr(0,message.find(' '));
+    std::string message;
+    std::stringstream value;
+    std::string value_str;
 
-	std::stringstream split(users_name);
-	
-	if (message.find(' ') != std::string::npos)
-		message = message.substr(message.find(' ') + 1);
-	else
-		message = "";
+    split >> value_str;
+    value << value_str;
+    split >> message;
 
-	while (std::getline(split, param, ','))
-		users.push_back(param);
+    if (value_str == "" || value_str == "#" ){
+        error_reply(fdclient, "411", "PRIVMSG", "", "No recipient given");
+        return;
+    }
+    else {
+        while (std::getline(value, value_str, ','))
+            users.push_back(value_str);    
+    }
 
-	if (users.size() == 0)
-		error_reply(fdclient, "411", "JOIN", "", "No recipient given");
-	else if (message == "")
-		error_reply(fdclient, "412", "JOIN", "", "No text to send");
-	else
-		send_privmsgs(users, message, fdclient);
+    if (msg.find(msg) == std::string::npos || message == "" || message == "#"){
+        error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
+        return;
+    }
+    else 
+        message = msg.substr(msg.find(value_str) + value_str.length() + 1);
 
+    send_privmsgs(users, message, fdclient);
+    split.clear();
+    value.clear();
 }

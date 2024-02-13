@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 20:07:56 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/06 15:41:27 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/13 18:46:58 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,43 @@ bool channel::is_op(int fdclient) {
 			return true;
 	}
 	return false;
+}
+
+void channel::set_password(std::string password) {
+    this->password = password;
+    this->is_private = true;
+}
+
+void channel::remove_password() {
+    this->password = "";
+    this->is_private = false;
+}
+
+bool channel::is_password(std::string password) {
+    if (this->password == password)
+        return true;
+    return false;
+}
+
+void channel::set_limit(int limit) {
+    this->limit = limit;
+    this->is_limited = true;
+}
+
+void channel::remove_limit() {
+    this->limit = 0;
+    this->is_limited = false;
+}
+
+std::string channel::get_modes() {
+    std::string modes = "+";
+    if (this->is_private)
+        modes += "k";
+    if (this->is_invite_only)
+        modes += "i";
+    if (this->is_limited)
+        modes += "l";
+    if (this->topic_restrict)
+        modes += "t";
+    return modes;
 }
