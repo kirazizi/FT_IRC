@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 19:52:18 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/13 22:23:23 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,12 @@ class server {
         void leave_the_channels(std::vector<std::string> channels, int fdclient, std::string reason);
 
         /*			MODE FUNCTIONS			*/
-        void mode_cmd(std::string msg, int fdclient);
-        void mode_invite(std::string channel_name, std::string mode, std::string value, int fdclient);
-        void mode_topic(std::string channel_name, std::string mode, std::string value, int fdclient);
-        void mode_password(std::string channel_name, std::string mode, std::string value, int fdclient);
-        void mode_op(std::string channel_name, std::string mode, std::string value, int fdclient);
-        void mode_limit(std::string channel_name, std::string mode, std::string value, int fdclient);
+        // void mode_cmd(std::string msg, int fdclient);
+        // void mode_invite(std::string channel_name, std::string mode, std::string value, int fdclient);
+        // void mode_topic(std::string channel_name, std::string mode, std::string value, int fdclient);
+        // void mode_password(std::string channel_name, std::string mode, std::string value, int fdclient);
+        // void mode_op(std::string channel_name, std::string mode, std::string value, int fdclient);
+        // void mode_limit(std::string channel_name, std::string mode, std::string value, int fdclient);
     
 };
 
