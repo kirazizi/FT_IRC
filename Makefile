@@ -6,13 +6,13 @@
 #    By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/23 14:01:20 by sbzizal           #+#    #+#              #
-#    Updated: 2024/02/16 13:37:10 by sbzizal          ###   ########.fr        #
+#    Updated: 2024/02/16 16:29:12 by sbzizal          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 SRC = ./channel.cpp ./client.cpp ./command.cpp ./command_op.cpp ./commands/invite_cmd.cpp \
 ./commands/join_cmd.cpp ./commands/kick_cmd.cpp ./commands/mode_cmd.cpp ./commands/mplay_cmd.cpp \

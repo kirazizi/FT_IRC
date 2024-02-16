@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/16 13:51:52 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/16 16:50:39 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,10 @@ std::string host(){
 }
 
 void ft_send(int fdclient, std::string msg){
-    send(fdclient, msg.c_str(), msg.length(), 0);
+    if (send(fdclient, msg.c_str(), msg.length(), 0) < 0){
+        std::cout << "Error: sending message" << std::endl;
+        exit(1);
+    }
 }
 
 void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg){
@@ -117,14 +120,17 @@ void server::identify_client(std::string msg,int fdclient){
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
-    if (target == NULL || target->is_connected == 1)
+    if (target == NULL)
         return;
+    if (target->is_connected){
+        handle_cmd(msg, fdclient);
+        return;
+    }
     if (cmd == "BOT"){
         target->bot = cmd; // set bot
         target->nickname = cmd;
         std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
         target->is_connected = 1;
-        // ft_send(fdclient, "Welcome to server\r\n");
         map_clients[target->nickname] = *target;
         return;
     }
@@ -190,7 +196,6 @@ int server::server_recieve(int fdclient){
         return 0;
     std::cout << buffer;
     identify_client(buffer, fdclient);
-    handle_cmd(buffer, fdclient);
     buffer.clear();
     return 0;
 }

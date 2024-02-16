@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/16 13:53:41 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/16 16:50:23 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ class server {
 };
 
 void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg);
+void ft_send(int fdclient, std::string msg);
 
 std::string host();
 #endif

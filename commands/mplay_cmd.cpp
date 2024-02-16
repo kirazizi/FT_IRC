@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/14 21:00:12 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/14 21:04:52 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/16 16:41:53 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,10 @@ void server::mplay_cmd(std::string msg, int fdclient){
 		}
 	
 	if (map_clients.find("BOT") == map_clients.end()){
-		msg_format(fdclient, "004", "BOT", "BOT is not connected");
+		msg_format(fdclient, "394", "BOT", "BOT is not connected");
 		return ;
 	}
 	bot_fd = map_clients["BOT"].fd;
-	if (!arg.empty()){
-		response = nick + " " + value + " " + arg;
-		send(bot_fd, response.c_str(), response.length(), 0);
-		return ;
-	}
-	response = nick + " " + value;
-	send(bot_fd, response.c_str(), response.length(), 0);
+	response = nick + " " + value + " " + arg;
+	ft_send(bot_fd, response.c_str());
 }
