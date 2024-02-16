@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/14 20:51:09 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 13:53:41 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,14 @@ class server {
         void mode_password(std::string channel_name, std::string mode, std::string value, int fdclient);
         void mode_op(std::string channel_name, std::string mode, std::string value, int fdclient);
         void mode_limit(std::string channel_name, std::string mode, std::string value, int fdclient);
+		
+
+		/*			MPLAY FUNCTIONS			*/
+		void mplay_cmd(std::string msg, int fdclient);
     
 };
+
+void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg);
 
 std::string host();
 #endif

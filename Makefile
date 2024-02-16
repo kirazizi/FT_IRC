@@ -3,31 +3,47 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+         #
+#    By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/23 14:01:20 by sbzizal           #+#    #+#              #
-#    Updated: 2024/02/03 14:45:27 by tajjid           ###   ########.fr        #
+#    Updated: 2024/02/16 13:37:10 by sbzizal          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC = $(shell find . -name "*.cpp")
+SRC = ./channel.cpp ./client.cpp ./command.cpp ./command_op.cpp ./commands/invite_cmd.cpp \
+./commands/join_cmd.cpp ./commands/kick_cmd.cpp ./commands/mode_cmd.cpp ./commands/mplay_cmd.cpp \
+./commands/part_cmd.cpp ./commands/privmsg_cmd.cpp ./commands/quit_cmd.cpp ./commands/topic_cmd.cpp \
+./main.cpp ./minisrv.cpp  ./parsing.cpp ./server.cpp \
 
-HDR = $(shell find . -name "*.hpp")
+BNS = ./mplay-bot/main.cpp ./mplay-bot/mplayer.cpp \
 
-OBJ = ircserv
+HDR = server.hpp client.hpp headers.hpp parsing.hpp channel.hpp \
 
-all: $(OBJ)
+HDR_BNS = ./mplay-bot/mplayer.hpp \
 
-$(OBJ): $(SRC) $(HDR)
-	$(CC) $(CFLAGS) $(SRC) -o $(OBJ)
+EXE = ircserv
 
-re: fclean all
+EXE_BNS = mplayer
 
-fclean:
-	rm -f $(OBJ)
+all: $(EXE)
 
-.PHONY: all fclean
+$(EXE): $(SRC) $(HDR)
+	$(CC) $(CFLAGS) $(SRC) -o $(EXE)
+
+bonus: $(EXE_BNS)
+
+$(EXE_BNS): $(BNS) $(HDR_BNS)
+	$(CC) $(CFLAGS) $(BNS) -o $(EXE_BNS)
+
+clean:
+	rm -f $(EXE) $(EXE_BNS)
+
+fclean: clean
+
+re: fclean all bonus
+
+.PHONY: all bonus clean fclean re

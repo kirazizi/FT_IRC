@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:17 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/09 16:35:22 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/13 13:57:42 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@ class client {
 	public:
 		int fd;
 		int is_connected;
-		std::string buffer_cl;
+		std::string client_msg;
 		std::string nickname;
 		std::string username;
 		std::string password;
 		std::string current_channel;
+		std::string bot;
 		client(){};
 		client(int fd) : fd(fd), is_connected(0), nickname(""), username(""), password("") {};
 };

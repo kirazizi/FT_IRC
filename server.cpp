@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/10 19:22:55 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 13:51:52 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
-    std::cout << "▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄   ░█░ █▄█   █ █▀▄ █▄▄   ▄█ ██▄ █▀▄ ▀▄▀ ██▄ █▀▄" << std::endl; 
+    std::cout << "▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄   ░█░ █▄█   █ █▀▄ █▄▄   ▄█ ██▄ █▀▄ ▀▄▀ ██▄ █▀▄" << std::endl;
     
     std::cout << "\033[34m\t\tServer is running on port: " << this->port << "\033[0m" << std::endl;
 
@@ -24,8 +24,9 @@ int server::server_setup(){
         std::cout << "Error: creating socket" << std::endl;
         exit(1);
     }
-    // fcntl(fdsocket, F_SETFL, O_NONBLOCK);
-
+    
+    // set socket to non-blocking using fcntl() function
+    fcntl(fdsocket, F_SETFL, O_NONBLOCK);
     
     // set socket options using setsockopt() function to reuse the address
     int yes = 1;
@@ -33,7 +34,7 @@ int server::server_setup(){
         std::cout << "Error: setsockopt failed" << std::endl;
         exit(1);
     }
-
+    
     struct sockaddr_in srv;
     // clear address structure
     memset(&srv, 0, sizeof(srv));
@@ -41,6 +42,14 @@ int server::server_setup(){
     srv.sin_family = AF_INET; // IPv4
     srv.sin_port = htons(this->port); // convert port number to network byte order (big endian)
     srv.sin_addr.s_addr = INADDR_ANY; // IP address
+    
+
+    // this just a check part i dont need it ---------------------> please ignore it
+    // --------------------------------------------------------------------------------
+    // const char *ip = "192.168.1.120"; // example IP address
+    // srv.sin_addr.s_addr = inet_addr(ip); // convert IP address to network byte order
+    // --------------------------------------------------------------------------------
+
 
     if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv)) == -1){ // bind socket to the server address
         std::cout << "Error: binding socket" << std::endl;
@@ -90,7 +99,6 @@ void ft_send(int fdclient, std::string msg){
 }
 
 void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg){
-    (void)nick;
     std::string prefix = host();
     std::string response = ":" + prefix + " " + cmd + " " + nick + " :" + msg + "\r\n";
     ft_send(fdclient, response);
@@ -109,8 +117,17 @@ void server::identify_client(std::string msg,int fdclient){
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
-    if (target == NULL || target->is_connected)
-        return ss.clear();
+    if (target == NULL || target->is_connected == 1)
+        return;
+    if (cmd == "BOT"){
+        target->bot = cmd; // set bot
+        target->nickname = cmd;
+        std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
+        target->is_connected = 1;
+        // ft_send(fdclient, "Welcome to server\r\n");
+        map_clients[target->nickname] = *target;
+        return;
+    }
     if(cmd == "USER" && value != ""){
         int space = value.find(' ');
         if (value.find(' ') != std::string::npos)
@@ -149,11 +166,9 @@ void server::identify_client(std::string msg,int fdclient){
             msg_format(fdclient, "002", target->nickname, "Your host is e3r8p2.1337.ma, running version 1.2");
             target->is_connected = 1;
             map_clients[target->nickname] = *target;
-            ss.clear();
+    
             return;
         }
-        // std::cout << target->nickname << ": " << msg;
-        // handle_cmd(msg, fdclient);
     }
     ss.clear();
 }
@@ -164,8 +179,9 @@ int server::server_recieve(int fdclient){
     int rcv = recv(fdclient, msg, 1024, 0);
     if (rcv < 0){
         std::cout << "Error: reading from socket" << std::endl;
-        exit(1);
+       return 1;
     }
+
     if (rcv == 0){
         return 1;
     }
@@ -199,9 +215,9 @@ void server::server_polling(int fdsocket){
             continue;
         for(int i = 0; i < (int)vpoll.size(); i++){
             if(vpoll[i].revents & POLLIN){
-                if(vpoll[i].fd == fdsocket)
+                if(vpoll[i].fd == fdsocket) // new connection
                     server_accept(fdsocket);
-                else
+                else                        // recieve data
                     if(server_recieve(vpoll[i].fd)){
                         quit_cmd("Leaving...", vpoll[i].fd);
                     }

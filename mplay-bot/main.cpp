@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   headers.hpp                                        :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/23 14:07:37 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/14 21:04:33 by sbzizal          ###   ########.fr       */
+/*   Created: 2024/02/13 11:32:51 by sbzizal           #+#    #+#             */
+/*   Updated: 2024/02/16 12:35:09 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HEADERS_HPP
-#define HEADERS_HPP
+#include "mplayer.hpp"
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <poll.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sstream>
-#include <map>
-#include <utility>
-#include <fstream>
-
-
-#endif
+int main(int ac, char **av) {
+    if (ac != 3) {
+        std::cout << "Usage: " << av[0] << " <Server IP> <Port>";
+        return 1;
+    }
+    try{
+        system("clear");
+        signal(SIGINT, signal_handler);
+        mplayer mp(std::atoi(av[2]), av[1]);
+        mp.run();
+    }
+    catch (std::exception &e){
+        std::cout << e.what() << std::endl;
+    }
+    return 0;
+}
