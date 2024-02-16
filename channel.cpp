@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 20:07:56 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 18:46:58 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/15 20:32:48 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,15 @@ bool channel::is_op(int fdclient) {
 			return true;
 	}
 	return false;
+}
+
+std::string channel::get_ops() {
+	std::string ops = "";
+	for(size_t i = 0; i < this->clients.size(); i++) {
+		if (is_op(this->clients[i].first))
+			ops += "\'" + this->clients[i].second + "\' ";
+	}
+	return ops;
 }
 
 void channel::set_password(std::string password) {

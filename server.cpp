@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/10 16:11:43 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/10 19:22:55 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,29 +109,35 @@ void server::identify_client(std::string msg,int fdclient){
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
-    if (target == NULL || target->is_connected == 1)
-        return;
+    if (target == NULL || target->is_connected)
+        return ss.clear();
     if(cmd == "USER" && value != ""){
+        int space = value.find(' ');
+        if (value.find(' ') != std::string::npos)
+            value = value.substr(0, space);
         target->username = value;
     }
-    else if(cmd == "PASS" && value != ""){
+    if(cmd == "PASS" && value != ""){
         // check password
         if (this->srv_pass != value){
             msg_format(fdclient, "464", value , "Wrong password please try again!");
+            ss.clear();
             return ;
         }
         target->password = value;
     }
-    else if(cmd == "NICK" && value != ""){
+    if(cmd == "NICK" && value != ""){
         // check if nickname is already taken
         for (size_t i = 0; i < vec_clients.size(); i++){
             if (vec_clients[i].nickname == value){
                 msg_format(fdclient, "433", "+_+" , "Nickname already taken please try again!");
+                ss.clear();
                 return ;
             }
         }
         if (param != ""){
             msg_format(fdclient, "432", "+_+" , "Nickname cannot contain space please try again!");
+            ss.clear();
             return ;
         }
         target->nickname = value;
@@ -143,10 +149,13 @@ void server::identify_client(std::string msg,int fdclient){
             msg_format(fdclient, "002", target->nickname, "Your host is e3r8p2.1337.ma, running version 1.2");
             target->is_connected = 1;
             map_clients[target->nickname] = *target;
+            ss.clear();
             return;
         }
+        // std::cout << target->nickname << ": " << msg;
         // handle_cmd(msg, fdclient);
     }
+    ss.clear();
 }
 
 int server::server_recieve(int fdclient){

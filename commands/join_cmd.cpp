@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 12:24:14 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/15 22:38:46 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,22 @@ std::string server::get_clients_names(std::vector<std::pair<int, std::string> > 
 void server::join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient){
 	std::string reply;
 	std::string host_post = host();
+	int client_fd;
+
 	reply += ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\r\n";
 	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
 	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + get_clients_names(map_channels[channel_name].clients) + "\n";
 	reply += ":" + host_post + " 366 " + client_nick + " = " + channel_name + " :" + "End of /NAMES list." + "\n";
 	send(fdclient, reply.c_str(), reply.size(), 0);
+
+	reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\n";
+	for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
+	{
+		client_fd = map_channels[channel_name].clients[j].first;
+		if (client_fd != fdclient){
+			send(client_fd, reply.c_str(), reply.size(), 0);
+		}
+	}
 }
 
 void server::join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient){
@@ -40,7 +51,6 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 	std::string channel_name;
 	std::string client_name;
 	std::string client_nick;
-	(void)keys;
 	
 	for (size_t i = 0; i < vec_clients.size(); i++)
 		if (vec_clients[i].fd == fdclient){
@@ -60,26 +70,33 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 			map_channels[channel_name] = channel(channel_name);
 			map_channels[channel_name].topic.first = "";
 			map_channels[channel_name].topic.second = ":No topic is set";
+			map_channels[channel_name].limit = 0;
 			map_channels[channel_name].add_op(fdclient);
 		}
 		else if (map_channels[channel_name].is_client(fdclient)){
 			error_reply(fdclient, "443", "JOIN " , "\"" + channel_name + "\"", "You are already in that channel");
 			continue;
 		}
+		else if (map_channels[channel_name].is_limited && map_channels[channel_name].clients.size() >= (size_t)map_channels[channel_name].limit){
+			error_reply(fdclient, "471", "JOIN", "\"" + channel_name + "\"", "This channel is full");
+			continue;
+		}
+		else if (map_channels[channel_name].is_invite_only && !map_channels[channel_name].is_invited_client(fdclient)){
+			error_reply(fdclient, "473", "JOIN", "\"" + channel_name + "\"", "You are not invited to this channel");
+			error_reply(fdclient, "473", "JOIN", client_nick , "Try to ask one these ops: " + map_channels[channel_name].get_ops());
+			continue;
+		}
+		else if (map_channels[channel_name].is_private){
+			if (keys.size() == 0 || i >= keys.size() || !map_channels[channel_name].is_password(keys[i])){
+				error_reply(fdclient, "475", "JOIN", "\"" + channel_name + "\"", "Wrong key");
+				continue;
+			}
+		}
+
 		map_channels[channel_name].add_client(fdclient, client_nick);
 		if (map_channels[channel_name].op_clients.size() == 0)
 			map_channels[channel_name].add_op(map_channels[channel_name].clients.begin()->first);
 		join_channel_msg(channel_name, client_name, client_nick, fdclient);
-	
-		int client_fd;
-		reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\n";
-		for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-		{
-			client_fd = map_channels[channel_name].clients[j].first;
-			if (client_fd != fdclient){
-				send(client_fd, reply.c_str(), reply.size(), 0);
-			}
-		}
 	}
 }
 

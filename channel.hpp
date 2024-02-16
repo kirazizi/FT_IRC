@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 19:01:18 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 18:36:52 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/15 20:28:30 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,16 @@ class channel{
 		void add_op(int fdclient);
 		void remove_op(int fdclient);
 		bool is_op(int fdclient);
+		std::string get_ops();
 
-        void set_password(std::string password);
-        void remove_password();
-        bool is_password(std::string password);
+		void set_password(std::string password);
+		void remove_password();
+		bool is_password(std::string password);
 
-        void set_limit(int limit);
-        void remove_limit();
+		void set_limit(int limit);
+		void remove_limit();
 
-        std::string get_modes();
+		std::string get_modes();
 };
 
 #endif
