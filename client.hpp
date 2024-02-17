@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:17 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/13 13:57:42 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/17 13:03:10 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class client {
 		std::string password;
 		std::string current_channel;
 		std::string bot;
+		std::string client_ip;
 		client(){};
 		client(int fd) : fd(fd), is_connected(0), nickname(""), username(""), password("") {};
 };

@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/16 16:50:39 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/17 13:03:04 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,6 @@ int server::server_setup(){
     srv.sin_family = AF_INET; // IPv4
     srv.sin_port = htons(this->port); // convert port number to network byte order (big endian)
     srv.sin_addr.s_addr = INADDR_ANY; // IP address
-    
-
-    // this just a check part i dont need it ---------------------> please ignore it
-    // --------------------------------------------------------------------------------
-    // const char *ip = "192.168.1.120"; // example IP address
-    // srv.sin_addr.s_addr = inet_addr(ip); // convert IP address to network byte order
-    // --------------------------------------------------------------------------------
-
 
     if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv)) == -1){ // bind socket to the server address
         std::cout << "Error: binding socket" << std::endl;
@@ -63,6 +55,11 @@ int server::server_setup(){
     }
 
     return fdsocket;
+}
+
+std::string get_ip(struct in_addr add){
+    char *ip = inet_ntoa(add);
+    return std::string(ip);
 }
 
 void server::server_accept(int fdsocket){
@@ -80,18 +77,21 @@ void server::server_accept(int fdsocket){
     clpoll.events = POLLIN;
     clpoll.revents = 0;
     vpoll.push_back(clpoll);
-
+    
     class client obj_client(fdclient);
+    obj_client.client_ip = get_ip(client.sin_addr);
     vec_clients.push_back(obj_client);
 }
 
 std::string host(){
-    system("hostname > /tmp/host.txt");
-    std::ifstream file("/tmp/host.txt");
-    std::string host;
-    std::getline(file, host);
-    file.close();
-    return host;
+    // gethostname() function
+    
+    char host[1024];
+    if (gethostname(host, 1024) < 0){
+        std::cout << "Error: getting hostname" << std::endl;
+        // throw std::runtime_error("Error: getting hostname");
+    }
+    return std::string(host);
 }
 
 void ft_send(int fdclient, std::string msg){
@@ -132,6 +132,7 @@ void server::identify_client(std::string msg,int fdclient){
         std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
         target->is_connected = 1;
         map_clients[target->nickname] = *target;
+        ss.clear();
         return;
     }
     if(cmd == "USER" && value != ""){
@@ -172,7 +173,7 @@ void server::identify_client(std::string msg,int fdclient){
             msg_format(fdclient, "002", target->nickname, "Your host is e3r8p2.1337.ma, running version 1.2");
             target->is_connected = 1;
             map_clients[target->nickname] = *target;
-    
+            ss.clear();
             return;
         }
     }
