@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+         #
+#    By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/23 14:01:20 by sbzizal           #+#    #+#              #
-#    Updated: 2024/02/16 16:29:12 by sbzizal          ###   ########.fr        #
+#    Updated: 2024/02/17 13:25:58 by tajjid           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ CC = c++
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
-SRC = ./channel.cpp ./client.cpp ./command.cpp ./command_op.cpp ./commands/invite_cmd.cpp \
+SRC = ./channel.cpp ./client.cpp ./command.cpp ./commands/invite_cmd.cpp \
 ./commands/join_cmd.cpp ./commands/kick_cmd.cpp ./commands/mode_cmd.cpp ./commands/mplay_cmd.cpp \
 ./commands/part_cmd.cpp ./commands/privmsg_cmd.cpp ./commands/quit_cmd.cpp ./commands/topic_cmd.cpp \
 ./main.cpp ./minisrv.cpp  ./parsing.cpp ./server.cpp \

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/15 22:38:46 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/17 13:22:53 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,13 @@ void server::join_channel_msg(std::string channel_name, std::string client_name,
 	std::string host_post = host();
 	int client_fd;
 
-	reply += ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\r\n";
+	reply += ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\r\n";
 	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
 	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + get_clients_names(map_channels[channel_name].clients) + "\n";
 	reply += ":" + host_post + " 366 " + client_nick + " = " + channel_name + " :" + "End of /NAMES list." + "\n";
 	send(fdclient, reply.c_str(), reply.size(), 0);
 
-	reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " JOIN " + channel_name + "\n";
+	reply = ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\n";
 	for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
 	{
 		client_fd = map_channels[channel_name].clients[j].first;
