@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/12 19:30:11 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 18:33:18 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,6 @@ void server::topic_cmd(std::string msg, int fdclient){
 				send(client_fd, reply.c_str(), reply.size(), 0);
 			}
 		}
-	} 
+	}
+	split.clear();
 }

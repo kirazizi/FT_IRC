@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mplay_cmd.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/14 21:00:12 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/16 16:41:53 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/16 18:33:53 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,5 @@ void server::mplay_cmd(std::string msg, int fdclient){
 	bot_fd = map_clients["BOT"].fd;
 	response = nick + " " + value + " " + arg;
 	ft_send(bot_fd, response.c_str());
+	ss.clear();
 }

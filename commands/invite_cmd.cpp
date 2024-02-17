@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/12 12:39:35 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 18:35:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void server::invite_cmd(std::string msg, int fdclient){
 
     split >> invited_name;
     split >> channel_name;
+	split.clear();
 
     int fdinvited;
     for (size_t i = 0; i < vec_clients.size(); i++)

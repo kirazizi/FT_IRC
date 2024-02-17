@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 12:24:45 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 19:35:35 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
 			}
 			else {
-				reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PRIVMSG " + channel_name + " :" + message + "\n";
+				reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PRIVMSG " + channel_name + " :" + message;
 				for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
 				{
 					if (map_channels[channel_name].clients[j].first != fdclient)
@@ -52,7 +52,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "401", client_nick, joined_name, "No such nick");
 			}
 			else {
-				reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PRIVMSG " + joined_name + " :" + message + "\n";
+				reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PRIVMSG " + joined_name + " :" + message;
 				send(map_clients[joined_name].fd, reply.c_str(), reply.length(), 0);
 			}
 		}
@@ -84,6 +84,8 @@ void server::privmsg_cmd(std::string msg, int fdclient){
         error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
         return;
     }
+	else if (message[0] == ':')
+		message = msg.substr(msg.find(value_str) + value_str.length() + 2);
     else 
         message = msg.substr(msg.find(value_str) + value_str.length() + 1);
 

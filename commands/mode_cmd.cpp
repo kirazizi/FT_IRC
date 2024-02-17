@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/14 21:16:00 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/16 18:34:40 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ void server::mode_cmd(std::string msg, int fdclient){
 	split >> channel_name;
 	split >> mode;
 	split >> value;
+	split.clear();
 	
 	if (channel_name.empty() || channel_name == "#"){
 		error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
