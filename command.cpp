@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/16 13:47:12 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/17 20:31:37 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 void server::handle_cmd(std::string msg, int fdclient){
 	int i = 0;
-	std::string commands[] = {"JOIN", "PART", "QUIT", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "MPLAY"};
-	while(i < 8){
+	std::string commands[] = {"JOIN", "PART", "QUIT", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "MPLAY", "PONG"};
+	while(i < 10){
 		if(get_cmd(msg) == commands[i])
 			break;
 		i++;
@@ -48,6 +48,8 @@ void server::handle_cmd(std::string msg, int fdclient){
 			break;
 		case 8:
 			mplay_cmd(msg, fdclient);
+			break;
+		case 9:
 			break;
 		default:
             // error_reply(fdclient, "421", "SERVER", get_cmd(msg), "Unknown command");

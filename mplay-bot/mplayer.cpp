@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 21:52:04 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/16 13:21:52 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/17 14:07:14 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,7 @@ int server_setup(std::string server_ip, int port){
     // Fill in server address structure
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     // Connect to server
     if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
