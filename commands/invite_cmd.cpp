@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/16 18:35:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/21 16:27:59 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,12 @@ void server::invite_cmd(std::string msg, int fdclient){
             fdinvited = vec_clients[i].fd;
             break;
         }
-
+	
     if (channel_name.empty() || invited_name.empty() || invited_name[0] == ':' || channel_name[0] == ':'){
         error_reply(fdclient, "461", "INVITE", "", "Not enough parameters");
         return;
     }
-    if (channel_name[0] != '#' || channel_name == "#" || map_channels.find(channel_name) == map_channels.end()){
+    else if (channel_name[0] != '#' || channel_name == "#" || map_channels.find(channel_name) == map_channels.end()){
         error_reply(fdclient, "403", "INVITE", client_nick + " " + channel_name, "No such channel");
         return;
     }
@@ -51,6 +51,10 @@ void server::invite_cmd(std::string msg, int fdclient){
         error_reply(fdclient, "442", client_nick, "", "You are not in that channel");
         return;
     }
+	else if (!map_channels[channel_name].is_invite_only){
+		error_reply(fdclient, "482", "INVITE", "", "Channel is not invite only");
+		return;
+	}
     else if (!map_channels[channel_name].is_op(fdclient)){
         error_reply(fdclient, "482", "INVITE", "", "You're not the channel operator");
         return;
