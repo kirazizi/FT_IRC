@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/17 20:25:57 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/24 21:14:50 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void server::mode_password(std::string channel_name, std::string mode, std::stri
 }
 
 void server::mode_op(std::string channel_name, std::string mode, std::string value, int fdclient){
-	
 	if (value.empty()){
 		mode_error = true;
 		error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
@@ -59,8 +58,11 @@ void server::mode_op(std::string channel_name, std::string mode, std::string val
 			mode_error = true;
 			error_reply(fdclient, "482", "MODE", value, "Is already an operator");
 		}
-		else 
+		else {
+			std::string reply = ":" + host() + " 273 " + channel_name + " :You are now an operator of " + "\"" + channel_name + "\"\n";
+			send(map_clients[value].fd, reply.c_str(), reply.length(), 0);
 			map_channels[channel_name].add_op(map_clients[value].fd);
+		}
 	}
 	else if (mode == "-o"){
 		if (map_channels[channel_name].is_op(map_clients[value].fd) == false){
@@ -71,11 +73,13 @@ void server::mode_op(std::string channel_name, std::string mode, std::string val
 			mode_error = true;
 			error_reply(fdclient, "482", "MODE", value, "You can't remove your own operator status");
 		}
-		else
+		else {
+			std::string reply = ":" + host() + " 273 " + channel_name + " :You are no longer an operator of " + "\"" + channel_name + "\"\n";
+			send(map_clients[value].fd, reply.c_str(), reply.length(), 0);
 			map_channels[channel_name].remove_op(map_clients[value].fd);
+		}
 	}
 }
-
 
 void server::mode_limit(std::string channel_name, std::string mode, std::string value, int fdclient){
 	if (mode == "+l"){
@@ -104,19 +108,19 @@ void server::mode_cmd(std::string msg, int fdclient){
 	std::string value;
 	std::string client_name;
 	std::string client_nick;
+	std::string client_ip;
 	std::string reply;
 
 	for (size_t i = 0; i < vec_clients.size(); i++)
 		if (vec_clients[i].fd == fdclient){
 			client_name = vec_clients[i].username;
 			client_nick = vec_clients[i].nickname;
+			client_ip = vec_clients[i].client_ip;
 			break;
 		}
 
 	split >> channel_name;
 	split >> mode;
-	split >> value;
-	split.clear();
 	
 	if (channel_name.empty() || channel_name == "#"){
 		error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
@@ -141,42 +145,51 @@ void server::mode_cmd(std::string msg, int fdclient){
 		error_reply(fdclient, "482", "MODE", channel_name, "You're not a channel operator");
 		return;
 	}
-	else if (mode.size() != 2 || (mode[0] != '+' && mode[0] != '-')){
+	else if (mode[0] != '+' && mode[0] != '-'){
 		error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "is unknown mode char to the server");
 		return;
 	}
 	else {
-		int mode_type;
-		std::string modes[] = {"i", "t", "k", "o", "l"};
-		for (mode_type = 0; mode_type < 5; mode_type++)
-			if (mode.size() == 2 && mode[1] == modes[mode_type][0])
-				break;
-		switch(mode_type){
-			case 0:
-				mode_invite(channel_name, mode);
-				break;
-			case 1:
-				mode_topic(channel_name, mode);
-				break;
-			case 2:
-				mode_password(channel_name, mode, value, fdclient);
-				break;
-			case 3:
-				mode_op(channel_name, mode, value, fdclient);
-				break;
-			case 4:
-				mode_limit(channel_name, mode, value, fdclient);
-				break;
-			default:
-				error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "is unknown mode char to the server");
-				return;
+		int mode_cmd;
+		std::string da_mode;
+		char modes[] = {'i', 't', 'k', 'o', 'l'};
+		
+		for (size_t i = 1; i < mode.size(); i++){
+			for (mode_cmd = 0; mode_cmd < 5; mode_cmd++)
+				if (mode[i] == modes[mode_cmd])
+					break;
+			da_mode = std::string(1, mode[0]) + std::string(1, mode[i]);
+			switch(mode_cmd){
+				case 0:
+					mode_invite(channel_name, da_mode);
+					break;
+				case 1:
+					mode_topic(channel_name, da_mode);
+					break;
+				case 2:
+					split >> value;
+					mode_password(channel_name, da_mode, value, fdclient);
+					break;
+				case 3:
+					split >> value;
+					mode_op(channel_name, da_mode, value, fdclient);
+					break;
+				case 4:
+					split >> value;
+					mode_limit(channel_name, da_mode, value, fdclient);
+					break;
+				default:
+					error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "is unknown mode char to the server");
+					continue;
+			}
+			if (mode_error == false){
+				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " MODE " + channel_name + " " + da_mode + "\n";
+				for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
+					send(map_channels[channel_name].clients[j].first, reply.c_str(), reply.length(), 0);
+			}
+			else
+				mode_error = false;
 		}
-		if (mode_error == false){
-			reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " MODE " + channel_name + " " + mode + "\n";
-			for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-			send(map_channels[channel_name].clients[j].first, reply.c_str(), reply.length(), 0);
-		}
-		else
-			mode_error = false;
 	}
+	split.clear();
 }

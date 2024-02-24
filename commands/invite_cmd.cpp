@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/21 16:27:59 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/24 19:57:09 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void server::invite_cmd(std::string msg, int fdclient){
         return;
     }
     else if (channel_name[0] != '#' || channel_name == "#" || map_channels.find(channel_name) == map_channels.end()){
-        error_reply(fdclient, "403", "INVITE", client_nick + " " + channel_name, "No such channel");
+        error_reply(fdclient, "403", "INVITE", "\"" + channel_name + "\"", "No such channel");
         return;
     }
     else if (!map_channels[channel_name].is_client(fdclient)){
