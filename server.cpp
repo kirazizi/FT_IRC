@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/17 13:03:04 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/25 15:55:40 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int server::server_setup(){
     }
     
     // listen for connections using listen() function
-    if(listen(fdsocket, 10) == -1){ // 10 is the maximum number of connections in the queue
+    if(listen(fdsocket, SOMAXCONN) == -1){ // 10 is the maximum number of connections in the queue
         std::cout << "Error: listening" << std::endl;
         exit(1);
     }
@@ -89,7 +89,7 @@ std::string host(){
     char host[1024];
     if (gethostname(host, 1024) < 0){
         std::cout << "Error: getting hostname" << std::endl;
-        // throw std::runtime_error("Error: getting hostname");
+        // throw std::runtime_error("Error: getting hostname");dwd
     }
     return std::string(host);
 }
@@ -183,10 +183,10 @@ void server::identify_client(std::string msg,int fdclient){
 int server::server_recieve(int fdclient){
     char msg[1024];
     memset(msg, 0, 1024);
-    int rcv = recv(fdclient, msg, 1024, 0);
+    int rcv = recv(fdclient, msg, 1023, 0);
     if (rcv < 0){
         std::cout << "Error: reading from socket" << std::endl;
-       return 1;
+        return 1;
     }
 
     if (rcv == 0){
@@ -210,11 +210,13 @@ void server::server_polling(int fdsocket){
     srvpoll.revents = 0;
 
     vpoll.push_back(srvpoll);
+    // signal(SIGPIPE, SIG_IGN);
     
     while(true){
         int pl = poll(&vpoll[0], vpoll.size(), 0);
         if (pl == -1){
             std::cout<< "Error: poll" << std::endl;
+            // clear and close all sockets
             exit(1);
         }
         if(pl == 0)
