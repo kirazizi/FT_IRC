@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 14:42:36 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 15:45:09 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 	std::string joined_name;
 	std::string client_name;
 	std::string client_nick;
+	std::string client_ip;
 	std::string reply;
 
 	for (size_t i = 0; i < vec_clients.size(); i++)
 		if (vec_clients[i].fd == fdclient){
 			client_name = vec_clients[i].username;
 			client_nick = vec_clients[i].nickname;
+			client_ip = vec_clients[i].client_ip;
 			break;
 		}
 
@@ -38,7 +40,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
 			}
 			else {
-				reply = ":" + client_nick + "!~" + client_name + "@" + host() + " PRIVMSG " + channel_name + " :" + message;
+				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " PRIVMSG " + channel_name + " :" + message;
 				map_channels[channel_name].send_channel_msg(reply, fdclient);
 			}
 		}
@@ -48,7 +50,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "401", client_nick, joined_name, "No such nick");
 			}
 			else {
-				reply = ":" + client_nick + "!~" + client_name + "@" + host() + " PRIVMSG " + joined_name + " :" + message;
+				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " PRIVMSG " + joined_name + " :" + message;
 				send(map_clients[joined_name].fd, reply.c_str(), reply.length(), 0);
 			}
 		}
