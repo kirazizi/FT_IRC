@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/23 18:52:41 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 21:06:33 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void server::handle_cmd(std::string msg, int fdclient){
 		case 9:
 			break;
 		default:
-            // error_reply(fdclient, "421", "SERVER", get_cmd(msg), "Unknown command");
+            error_reply(fdclient, "421", "SERVER", get_cmd(msg), "Unknown command");
 			break;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 17:02:41 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/25 18:07:33 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 21:03:12 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,20 @@
 
 void server::quit_cmd(std::string msg, int fdclient){
 	(void)msg;
-	std::string client_nick;
 	std::string reply;
+	std::string client_nick;
+	std::string client_name;
+	std::string client_ip;
+	
+	for (size_t i = 0; i < vec_clients.size(); i++)
+		if (vec_clients[i].fd == fdclient){
+			client_name = vec_clients[i].username;
+			client_nick = vec_clients[i].nickname;
+			client_ip = vec_clients[i].client_ip;
+			break;
+		}
 
-	reply = ":" + map_clients[client_nick].nickname + "!~" + map_clients[client_nick].username + \
-			"@" + map_clients[client_nick].client_ip + " QUIT :Client disconnected\r\n";
+	reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " QUIT :Client disconnected\r\n";
 
 	std::cout << "\033[31m" << "disconnecing ..." << "\033[0m" << std::endl;
 

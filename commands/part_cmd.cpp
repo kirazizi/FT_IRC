@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 19:32:17 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 14:44:30 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 21:04:01 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,13 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 	std::string channel_name;
 	std::string client_name;
 	std::string client_nick;
+	std::string client_ip;
 	
 	for (size_t i = 0; i < vec_clients.size(); i++)
 		if (vec_clients[i].fd == fdclient){
 			client_name = vec_clients[i].username;
 			client_nick = vec_clients[i].nickname;
+			client_ip = vec_clients[i].client_ip;
 			break;
 		}
 
@@ -41,7 +43,7 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 			error_reply(fdclient, "442", "PART", channel_name, "You are not in that channel");
 			continue;
 		}
-		reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PART " + channel_name + " :" + reason + "\n";
+		reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " PART " + channel_name + " :" + reason + "\n";
 		map_channels[channel_name].send_channel_msg(reply, fdclient);
 		map_channels[channel_name].remove_client(fdclient);
 		map_channels[channel_name].remove_op(fdclient);
@@ -72,7 +74,7 @@ void server::part_cmd(std::string msg, int fdclient){
 	}
 
 	if (msg.find(msg) == std::string::npos || reason == "" || reason == "#")
-		reason = "no reason";
+		reason = "No reason";
 	else {	
 		reason = msg.substr(msg.find(value_str) + value_str.length() + 1);
 		if (reason[0] == ':')
