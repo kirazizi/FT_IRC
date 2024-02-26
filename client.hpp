@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:17 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/17 13:03:10 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/26 15:55:53 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 class client {
 	public:
+		std::string buffer_cl;
 		int fd;
 		int is_connected;
 		std::string client_msg;

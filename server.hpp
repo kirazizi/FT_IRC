@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/17 13:24:13 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/26 17:04:47 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ class server {
 		int  server_recieve(int fdclient);
 		void identify_client(std::string msg,int fdclient);
 		void handle_cmd(std::string msg, int fdclient);
+		
+		
+		/*			HELPER FUNCTIONS		*/
+		
+		void clear_all_client();
 	
 
 		/*			JOIN FUNCTIONS			*/

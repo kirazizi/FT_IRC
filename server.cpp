@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/25 15:55:40 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/26 19:01:51 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void server::identify_client(std::string msg,int fdclient){
         }
         target->password = value;
     }
-    if(cmd == "NICK" && value != ""){
+    if(cmd == "NICK" && value != ""){ // i want to check if the nick polices are cworrect
         // check if nickname is already taken
         for (size_t i = 0; i < vec_clients.size(); i++){
             if (vec_clients[i].nickname == value){
@@ -170,7 +170,8 @@ void server::identify_client(std::string msg,int fdclient){
         if(!target->is_connected){
             std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
             msg_format(fdclient, "001", target->nickname, "Welcome to chat server");
-            msg_format(fdclient, "002", target->nickname, "Your host is e3r8p2.1337.ma, running version 1.2");
+            std::string motd = "your host is " + host() + ", running version 1.2";
+            msg_format(fdclient, "002", target->nickname, motd);
             target->is_connected = 1;
             map_clients[target->nickname] = *target;
             ss.clear();
@@ -190,19 +191,43 @@ int server::server_recieve(int fdclient){
     }
 
     if (rcv == 0){
+        // this->buffer.clear();
         return 1;
     }
-    this->buffer += msg;
-    if (buffer.find("\n") == std::string::npos)
-        return 0;
-    std::cout << buffer;
-    identify_client(buffer, fdclient);
-    buffer.clear();
+
+    for (size_t i = 0; i < vec_clients.size(); i++){
+        if (vec_clients[i].fd == fdclient){
+            vec_clients[i].buffer_cl += msg;
+            if (vec_clients[i].buffer_cl.find("\n") == std::string::npos)
+                return 0;
+            std::cout << "buffer: " << vec_clients[i].buffer_cl;
+            std::string msg = vec_clients[i].buffer_cl;
+            this->vec_clients[i].buffer_cl.clear();
+            identify_client(msg, fdclient);
+        }
+    }
     return 0;
 }
 
+void server::clear_all_client(){
+    // clear all clients
+    for (size_t i = 0; i < vpoll.size(); i++)
+        close(vpoll[i].fd);
+    vpoll.clear();
+    vec_clients.clear();
+    map_clients.clear();
+    map_channels.clear();
+    exit(1);
+}
+
+void signal_handler(int signum){
+    (void)signum;
+    exit(1);
+}
+
 void server::server_polling(int fdsocket){
-    
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, signal_handler);
     struct pollfd srvpoll;
 
     srvpoll.fd = fdsocket;
@@ -210,24 +235,24 @@ void server::server_polling(int fdsocket){
     srvpoll.revents = 0;
 
     vpoll.push_back(srvpoll);
-    // signal(SIGPIPE, SIG_IGN);
     
     while(true){
         int pl = poll(&vpoll[0], vpoll.size(), 0);
         if (pl == -1){
             std::cout<< "Error: poll" << std::endl;
             // clear and close all sockets
-            exit(1);
+            clear_all_client();
         }
         if(pl == 0)
             continue;
         for(int i = 0; i < (int)vpoll.size(); i++){
             if(vpoll[i].revents & POLLIN){
-                if(vpoll[i].fd == fdsocket) // new connection
+                if(vpoll[i].fd == fdsocket) // accept new connection
                     server_accept(fdsocket);
-                else                        // recieve data
+                else                        // recieve data from client
                     if(server_recieve(vpoll[i].fd)){
                         quit_cmd("Leaving...", vpoll[i].fd);
+                        break;
                     }
             }
         }

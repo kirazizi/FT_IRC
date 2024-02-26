@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+         #
+#    By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/23 14:01:20 by sbzizal           #+#    #+#              #
-#    Updated: 2024/02/17 13:25:58 by tajjid           ###   ########.fr        #
+#    Updated: 2024/02/26 18:24:53 by sbzizal          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98  -fsanitize=address
 
 SRC = ./channel.cpp ./client.cpp ./command.cpp ./commands/invite_cmd.cpp \
 ./commands/join_cmd.cpp ./commands/kick_cmd.cpp ./commands/mode_cmd.cpp ./commands/mplay_cmd.cpp \
