@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg_cmd.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/17 13:54:29 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/26 14:42:36 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 			}
 			else {
 				reply = ":" + client_nick + "!~" + client_name + "@" + host() + " PRIVMSG " + channel_name + " :" + message;
-				for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-				{
-					if (map_channels[channel_name].clients[j].first != fdclient)
-						send(map_channels[channel_name].clients[j].first, reply.c_str(), reply.length(), 0);
-				}
+				map_channels[channel_name].send_channel_msg(reply, fdclient);
 			}
 		}
 		else {

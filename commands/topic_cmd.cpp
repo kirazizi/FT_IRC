@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/16 18:33:18 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 14:44:34 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,9 @@ void server::topic_cmd(std::string msg, int fdclient){
 		reply = ":" + client_nick + " TOPIC " + channel_name + " " + topic + "\r\n";
 		send(fdclient, reply.c_str(), reply.size(), 0);
 	
-		int client_fd;
 		std::cout << "topic: " << topic << std::endl;
 		reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " TOPIC " + channel_name + " " + topic + "\r\n";
-		for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-		{
-			client_fd = map_channels[channel_name].clients[j].first;
-			if (client_fd != fdclient){
-				send(client_fd, reply.c_str(), reply.size(), 0);
-			}
-		}
+		map_channels[channel_name].send_channel_msg(reply, fdclient);
 	}
 	split.clear();
 }

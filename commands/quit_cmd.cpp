@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quit_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 17:02:41 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/14 20:38:22 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/25 18:07:33 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,35 +14,40 @@
 #include "../client.hpp"
 
 void server::quit_cmd(std::string msg, int fdclient){
-    (void)msg;
-    std::string client_nick;
+	(void)msg;
+	std::string client_nick;
+	std::string reply;
 
-    std::cout << "\033[31m" << "disconnecing ..." << "\033[0m" << std::endl;
+	reply = ":" + map_clients[client_nick].nickname + "!~" + map_clients[client_nick].username + \
+			"@" + map_clients[client_nick].client_ip + " QUIT :Client disconnected\r\n";
 
-    for (size_t i = 0; i < vpoll.size(); i++)
-        if (vpoll[i].fd == fdclient){
-            close(vpoll[i].fd);
-            vpoll.erase(vpoll.begin() + i);
-        }
+	std::cout << "\033[31m" << "disconnecing ..." << "\033[0m" << std::endl;
 
-    for (size_t i = 0; i < vec_clients.size(); i++)
-        if (vec_clients[i].fd == fdclient)
-        {
-            client_nick = vec_clients[i].nickname;
-            vec_clients.erase(vec_clients.begin() + i);
-        }
-    
-    map_clients.erase(client_nick);
-    std::map<std::string, channel>::iterator it = map_channels.begin();
+	for (size_t i = 0; i < vpoll.size(); i++)
+		if (vpoll[i].fd == fdclient){
+			close(vpoll[i].fd);
+			vpoll.erase(vpoll.begin() + i);
+		}
 
-    while (it != map_channels.end())
-    {
-        if (it->second.is_client(fdclient))
-        {
-            it->second.remove_client(fdclient);
-            it->second.remove_op(fdclient);
-            it->second.remove_invited_client(fdclient);
-        }
-        it++;
-    }
+	for (size_t i = 0; i < vec_clients.size(); i++)
+		if (vec_clients[i].fd == fdclient)
+		{
+			client_nick = vec_clients[i].nickname;
+			vec_clients.erase(vec_clients.begin() + i);
+		}
+	
+	map_clients.erase(client_nick);
+	std::map<std::string, channel>::iterator it = map_channels.begin();
+
+	while (it != map_channels.end())
+	{
+		if (it->second.is_client(fdclient))
+		{
+			it->second.remove_client(fdclient);
+			it->second.remove_op(fdclient);
+			it->second.remove_invited_client(fdclient);
+			it->second.send_channel_msg(reply, fdclient);
+		}
+		it++;
+	}	
 }

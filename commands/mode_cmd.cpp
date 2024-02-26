@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/24 21:14:50 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 14:42:22 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,8 +184,8 @@ void server::mode_cmd(std::string msg, int fdclient){
 			}
 			if (mode_error == false){
 				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " MODE " + channel_name + " " + da_mode + "\n";
-				for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-					send(map_channels[channel_name].clients[j].first, reply.c_str(), reply.length(), 0);
+				map_channels[channel_name].send_channel_msg(reply, fdclient);
+				send(fdclient, reply.c_str(), reply.length(), 0);
 			}
 			else
 				mode_error = false;

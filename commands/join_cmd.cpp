@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/17 13:50:45 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/26 14:44:24 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ std::string server::get_clients_names(std::vector<std::pair<int, std::string> > 
 void server::join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient){
 	std::string reply;
 	std::string host_post = host();
-	int client_fd;
 
 	reply += ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\r\n";
 	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
@@ -37,13 +36,7 @@ void server::join_channel_msg(std::string channel_name, std::string client_name,
 	send(fdclient, reply.c_str(), reply.size(), 0);
 
 	reply = ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\n";
-	for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-	{
-		client_fd = map_channels[channel_name].clients[j].first;
-		if (client_fd != fdclient){
-			send(client_fd, reply.c_str(), reply.size(), 0);
-		}
-	}
+	map_channels[channel_name].send_channel_msg(reply, fdclient);
 }
 
 void server::join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient){

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 19:32:17 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/13 12:45:04 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/26 14:44:30 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,11 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 			error_reply(fdclient, "442", "PART", channel_name, "You are not in that channel");
 			continue;
 		}
+		reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PART " + channel_name + " :" + reason + "\n";
+		map_channels[channel_name].send_channel_msg(reply, fdclient);
 		map_channels[channel_name].remove_client(fdclient);
 		map_channels[channel_name].remove_op(fdclient);
 		map_channels[channel_name].remove_invited_client(fdclient);
-		int client_fd;
-		reply = ":" + client_nick + "!~" + client_name + "@127.0.0.1" + " PART " + channel_name + " :" + reason + "\n";
-		for (size_t j = 0; j < map_channels[channel_name].clients.size(); j++)
-		{
-			client_fd = map_channels[channel_name].clients[j].first;
-			send(client_fd, reply.c_str(), reply.length(), 0);
-		}
 	}
 }
 	
