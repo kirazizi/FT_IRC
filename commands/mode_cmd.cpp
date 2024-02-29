@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 14:42:22 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 22:40:15 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ void server::mode_limit(std::string channel_name, std::string mode, std::string 
 		map_channels[channel_name].remove_limit();
 }
 
+// void server::mode_applier
+
 void server::mode_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));
 	std::string channel_name;
@@ -121,10 +123,16 @@ void server::mode_cmd(std::string msg, int fdclient){
 
 	split >> channel_name;
 	split >> mode;
+
+	channel_name = to_lower(channel_name);
 	
-	if (channel_name.empty() || channel_name == "#"){
+	if (channel_name.empty() || (channel_name == "#" && mode.empty())){
 		error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
-		error_reply(fdclient, "650", "MODE", "", "<target> [[(+|-)]<modes> [<mode-parameters>]]");
+		error_reply(fdclient, "650", "MODE", "", "Syntax: <#channel> <\"+/-\"mode> [value (if needed)]");
+		return;
+	}
+	else if (channel_name[0] != '#'){
+		error_reply(fdclient, "403", "MODE", "\"" + channel_name + "\"", "Bad channel name");
 		return;
 	}
 	else if (map_channels.find(channel_name) == map_channels.end()){

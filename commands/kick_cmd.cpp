@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 14:42:11 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 22:50:17 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,7 @@ void server::kick_cmd(std::string msg, int fdclient){
 	value << value_str;
 	split >> reason;
 
-	if (channel_name == "" || value_str == "" || channel_name == "#" || channel_name == " " || value_str == " " )
-	{
+	if (channel_name.empty() || value_str.empty() || (channel_name == "#" && value_str.empty())){
 		error_reply(fdclient, "461", "KICK", "" ,"Not enough parameters");
 		return;
 	}
@@ -72,7 +71,7 @@ void server::kick_cmd(std::string msg, int fdclient){
 	}
 
 	if (channel_name[0] != '#'){
-		error_reply(fdclient, "403", "KICK " + channel_name, "", "Bad channel name");
+		error_reply(fdclient, "403", "KICK", + "\"" + channel_name + "\"", "Bad channel name");
 		return;
 	}
 	else if (map_channels.find(channel_name) == map_channels.end()){

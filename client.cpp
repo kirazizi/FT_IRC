@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/09 16:35:39 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 21:15:25 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,18 @@ std::string get_cmd(const std::string &msg){
 	cmd.erase(std::remove(cmd.begin(), cmd.end(), '\r'), cmd.end());
 	cmd.erase(std::remove(cmd.begin(), cmd.end(), '\n'), cmd.end());
 	return cmd;
+}
+
+std::string to_upper(std::string str){
+	for (size_t i = 0; i < str.length(); i++)
+		str[i] = std::toupper(str[i]);
+	return str;
+}
+
+std::string to_lower(std::string str){
+	for (size_t i = 0; i < str.length(); i++)
+		str[i] = std::tolower(str[i]);
+	return str;
 }
 
 std::string get_mode_cmd(const std::string &msg){

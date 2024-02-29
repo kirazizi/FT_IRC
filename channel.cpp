@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 20:07:56 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/25 18:11:11 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/27 20:53:50 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,18 @@ std::string channel::get_modes() {
     if (this->topic_restrict)
         modes += "t";
     return modes;
+}
+
+std::string channel::get_clients_names() {
+	std::string clients;
+
+	for(size_t i = 0; i < this->clients.size(); i++) {
+		if (is_op(this->clients[i].first))
+			clients += "@" + this->clients[i].second + " ";
+		else
+			clients += this->clients[i].second + " ";
+	}
+	return clients;
 }
 
 void channel::send_channel_msg(std::string msg, int fdclient) {

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 21:04:57 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 22:35:21 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,22 @@ void server::topic_cmd(std::string msg, int fdclient){
 		if (vec_clients[i].fd == fdclient){
 			client_name = vec_clients[i].username;
 			client_nick = vec_clients[i].nickname;
+			client_ip = vec_clients[i].client_ip;
 			break;
 		}
 
 	split >> channel_name;
+	channel_name = to_lower(channel_name);
 
 	if (channel_name.empty() || channel_name == ":" || channel_name == "#"){
 		error_reply(fdclient, "461", "TOPIC", "", "Not enough parameters");
 		return;
 	}
-	if (channel_name[0] != '#' || map_channels.find(channel_name) == map_channels.end()){
+	else if (channel_name[0] != '#'){
+		error_reply(fdclient, "403", "TOPIC", channel_name, "Bad channel name");
+		return;
+	}
+	else if (map_channels.find(channel_name) == map_channels.end()){
 		error_reply(fdclient, "403", "TOPIC", channel_name, "No such channel");
 		return;
 	}

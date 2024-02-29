@@ -6,24 +6,12 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 14:44:24 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 22:10:56 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 #include "../client.hpp"
-
-std::string server::get_clients_names(std::vector<std::pair<int, std::string> > clients){
-	std::string reply;
-
-	for (size_t i = 0; i < clients.size(); i++)
-	{
-		reply += clients[i].second;
-		if (i != clients.size() - 1)
-			reply += " ";
-	}
-	return reply;
-}
 
 void server::join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient){
 	std::string reply;
@@ -31,7 +19,7 @@ void server::join_channel_msg(std::string channel_name, std::string client_name,
 
 	reply += ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\r\n";
 	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
-	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + get_clients_names(map_channels[channel_name].clients) + "\n";
+	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + map_channels[channel_name].get_clients_names() + "\n";
 	reply += ":" + host_post + " 366 " + client_nick + " = " + channel_name + " :" + "End of /NAMES list." + "\n";
 	send(fdclient, reply.c_str(), reply.size(), 0);
 
@@ -55,7 +43,7 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		channel_name = channels[i];
-		if (channel_name[0] != '#'){
+		if (channel_name[0] != '#' || channel_name == "#"){
 			error_reply(fdclient, "403", "JOIN", "\"" + channel_name + "\"", "Bad channel name");
 			continue;
 		}
@@ -108,11 +96,13 @@ void server::join_cmd(std::string msg, int fdclient){
         error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
         return;
     }
-    else {
+    else 
         while (std::getline(value, value_str, ','))
-            channels.push_back(value_str);
-    }
-    
+			if (value_str != ""){
+				value_str = to_lower(value_str);
+            	channels.push_back(value_str);
+			}
+
     value.clear();
     split >> value_str;
     value << value_str;

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/26 21:06:33 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 21:17:20 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,16 @@
 
 void server::handle_cmd(std::string msg, int fdclient){
 	int i = 0;
+	std::string cmd;
 	std::string commands[] = {"JOIN", "PART", "QUIT", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "MPLAY", "PONG"};
+
+	cmd = to_upper(get_cmd(msg));
 	while(i < 10){
-		if(get_cmd(msg) == commands[i])
+		if(cmd == commands[i])
 			break;
 		i++;
 	}
+
 	switch(i){
 		case 0:
 			join_cmd(msg, fdclient);

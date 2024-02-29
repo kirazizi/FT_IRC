@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 17:04:47 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/02/29 22:40:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,12 @@ class server {
 		
 		
 		/*			HELPER FUNCTIONS		*/
-		
 		void clear_all_client();
-	
 
 		/*			JOIN FUNCTIONS			*/
 		void join_cmd(std::string msg, int fdclient);
 		void join_the_channels(std::vector<std::string> channels, std::vector<std::string> keys, int fdclient);
 		void join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient);
-		std::string get_clients_names(std::vector<std::pair<int, std::string> > clients);
 
 		/*			PRIVMSG FUNCTIONS		*/
 		void privmsg_cmd(std::string msg, int fdclient);

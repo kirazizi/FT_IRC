@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 15:45:09 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/02/29 22:53:57 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,11 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 	for (size_t i = 0; i < users.size(); i++)
 	{
 		if (users[i][0] == '#') {
-			channel_name = users[i];
-			if (map_channels.find(channel_name) == map_channels.end()){
+			channel_name = to_lower(users[i]);
+			if (channel_name == "#"){
+				error_reply(fdclient, "403", "PRIVMSG", "\"" + channel_name + "\"", "Bad channel name");
+			}
+			else if (map_channels.find(channel_name) == map_channels.end()){
 				error_reply(fdclient, "401", client_nick , "\"" + channel_name + "\"", "No such channel");
 			}
 			else if (!map_channels[channel_name].is_client(fdclient)){
@@ -69,7 +72,7 @@ void server::privmsg_cmd(std::string msg, int fdclient){
     value << value_str;
     split >> message;
 
-    if (value_str == "" || value_str == "#" ){
+    if (value_str == "" || (value_str == "#" && message.empty())){
         error_reply(fdclient, "411", "PRIVMSG", "", "No recipient given");
         return;
     }
@@ -78,7 +81,7 @@ void server::privmsg_cmd(std::string msg, int fdclient){
             users.push_back(value_str);    
     }
 
-    if (msg.find(msg) == std::string::npos || message == "" || message == "#"){
+    if (msg.find(msg) == std::string::npos || message == ""){
         error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
         return;
     }
