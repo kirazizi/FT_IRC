@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:40:15 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/01 13:39:07 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ void server::mode_limit(std::string channel_name, std::string mode, std::string 
 			error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
 		}
 		else {
-			int limit = std::stoi(value);	
-			if (limit < 0){
+			int limit = std::atoi(value.c_str());
+			if (limit <= 0){
 				mode_error = true;
 				error_reply(fdclient, "461", "MODE", "", "Invalid limit");
 			}

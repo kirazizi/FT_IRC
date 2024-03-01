@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 19:32:17 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:52:41 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/01 16:38:51 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,10 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 		map_channels[channel_name].remove_client(fdclient);
 		map_channels[channel_name].remove_op(fdclient);
 		map_channels[channel_name].remove_invited_client(fdclient);
+		if (map_channels[channel_name].op_clients.size() == 0 && map_channels[channel_name].clients.size() > 0)
+			map_channels[channel_name].add_op(map_channels[channel_name].clients[0].first);
+		else if (map_channels[channel_name].clients.size() == 0)
+			map_channels.erase(channel_name);
 	}
 }
 	

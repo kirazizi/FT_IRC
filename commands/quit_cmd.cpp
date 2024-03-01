@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 17:02:41 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/26 21:03:12 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/01 17:26:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ void server::quit_cmd(std::string msg, int fdclient){
 		}
 	
 	map_clients.erase(client_nick);
-	std::map<std::string, channel>::iterator it = map_channels.begin();
-
-	while (it != map_channels.end())
+	std::map<std::string, channel>::iterator it;
+	
+	for (it = map_channels.begin(); it != map_channels.end();)
 	{
 		if (it->second.is_client(fdclient))
 		{
@@ -56,6 +56,14 @@ void server::quit_cmd(std::string msg, int fdclient){
 			it->second.remove_op(fdclient);
 			it->second.remove_invited_client(fdclient);
 			it->second.send_channel_msg(reply, fdclient);
+			if (it->second.op_clients.size() == 0 && it->second.clients.size() > 0)
+				it->second.add_op(it->second.clients[0].first);
+			else if (it->second.clients.size() == 0)
+			{
+				map_channels.erase(it->first);
+				it = map_channels.begin();
+				continue;
+			}		
 		}
 		it++;
 	}	

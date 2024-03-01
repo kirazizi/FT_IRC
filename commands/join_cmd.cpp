@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:10:56 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/01 19:27:26 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 		}
 
 		map_channels[channel_name].add_client(fdclient, client_nick);
-		if (map_channels[channel_name].op_clients.size() == 0)
-			map_channels[channel_name].add_op(map_channels[channel_name].clients.begin()->first);
 		join_channel_msg(channel_name, client_name, client_nick, fdclient);
 	}
 }
@@ -86,31 +84,31 @@ void server::join_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
-    std::stringstream value;
-    std::string value_str;
+	std::stringstream value;
+	std::string value_str;
 
-    split >> value_str;
-    value << value_str;
-    if (value_str == "" || value_str == "#")
-    {
-        error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
-        return;
-    }
-    else 
-        while (std::getline(value, value_str, ','))
+	split >> value_str;
+	value << value_str;
+	if (value_str == "" || value_str == "#")
+	{
+		error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
+		return;
+	}
+	else 
+		while (std::getline(value, value_str, ','))
 			if (value_str != ""){
 				value_str = to_lower(value_str);
-            	channels.push_back(value_str);
+				channels.push_back(value_str);
 			}
 
-    value.clear();
-    split >> value_str;
-    value << value_str;
+	value.clear();
+	split >> value_str;
+	value << value_str;
 
-    while (std::getline(value, value_str, ','))
-        keys.push_back(value_str);
+	while (std::getline(value, value_str, ','))
+		keys.push_back(value_str);
 
-    join_the_channels(channels, keys, fdclient);
-    split.clear();
-    value.clear();
+	join_the_channels(channels, keys, fdclient);
+	split.clear();
+	value.clear();
 }

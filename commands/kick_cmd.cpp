@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:50:17 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/01 16:43:16 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,21 @@ void server::kick_users(std::string channel_name, std::vector<std::string> users
 			continue;
 		}
 		fd_kicked_user = map_clients[kicked_user].fd;
-		if (map_channels[channel_name].is_client(fd_kicked_user) == false){
+		if (fd_kicked_user == fdclient){
+			error_reply(fdclient, "441", client_nick, kicked_user, "You can't kick yourself");
+			continue;
+		}
+		else if (map_channels[channel_name].is_client(fd_kicked_user) == false){
 			error_reply(fdclient, "441", client_nick, kicked_user, "They aren't on that channel");
 			continue;
 		}
-		else {         
-			reply = ":" + client_nick + " KICK " + channel_name + " " + kicked_user + " :" + reason + "\n";
-			map_channels[channel_name].send_channel_msg(reply, fdclient);
+		else {
 			map_channels[channel_name].remove_client(fd_kicked_user);
 			map_channels[channel_name].remove_op(fd_kicked_user);
+			reply = ":" + client_nick + " KICK " + channel_name + " " + kicked_user + " :" + reason + "\n";
+			map_channels[channel_name].send_channel_msg(reply, fdclient);
+			send(fdclient, reply.c_str(), reply.length(), 0);
+			send(fd_kicked_user, reply.c_str(), reply.length(), 0);
 		}
 	}
 }
