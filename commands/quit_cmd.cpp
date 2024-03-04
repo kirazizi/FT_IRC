@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 17:02:41 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/01 17:26:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/04 12:24:17 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ void server::quit_cmd(std::string msg, int fdclient){
 			it->second.remove_op(fdclient);
 			it->second.remove_invited_client(fdclient);
 			it->second.send_channel_msg(reply, fdclient);
-			if (it->second.op_clients.size() == 0 && it->second.clients.size() > 0)
+			if (it->second.op_clients.size() == 0 && it->second.clients.size() > 0)	// checking if the last op leaves the channel
 				it->second.add_op(it->second.clients[0].first);
-			else if (it->second.clients.size() == 0)
+			else if (it->second.clients.size() == 0)								// checking if the last client leaves the channel and reseting the search
 			{
 				map_channels.erase(it->first);
 				it = map_channels.begin();

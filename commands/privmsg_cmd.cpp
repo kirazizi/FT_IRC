@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:53:57 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/04 12:32:43 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 
 	for (size_t i = 0; i < users.size(); i++)
 	{
-		if (users[i][0] == '#') {
+		if (users[i][0] == '#') {																			// checking if the recipient is a channel
 			channel_name = to_lower(users[i]);
 			if (channel_name == "#"){
 				error_reply(fdclient, "403", "PRIVMSG", "\"" + channel_name + "\"", "Bad channel name");
 			}
-			else if (map_channels.find(channel_name) == map_channels.end()){
+			else if (map_channels.find(channel_name) == map_channels.end()){								// checking if the channel exists
 				error_reply(fdclient, "401", client_nick , "\"" + channel_name + "\"", "No such channel");
 			}
-			else if (!map_channels[channel_name].is_client(fdclient)){
+			else if (!map_channels[channel_name].is_client(fdclient)){										// checking if the client is in the channel
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
 			}
 			else {
@@ -47,9 +47,9 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				map_channels[channel_name].send_channel_msg(reply, fdclient);
 			}
 		}
-		else {
+		else {																								// The recipient is a user
 			joined_name = users[i];
-			if (map_clients.find(joined_name) == map_clients.end()){
+			if (map_clients.find(joined_name) == map_clients.end()){										// checking if the client is in the server
 				error_reply(fdclient, "401", client_nick, joined_name, "No such nick");
 			}
 			else {
@@ -72,16 +72,16 @@ void server::privmsg_cmd(std::string msg, int fdclient){
     value << value_str;
     split >> message;
 
-    if (value_str == "" || (value_str == "#" && message.empty())){
+    if (value_str == "" || (value_str == "#" && message.empty())){											// checking if the command has enough parameters
         error_reply(fdclient, "411", "PRIVMSG", "", "No recipient given");
         return;
     }
-    else {
+    else {																									// adding the recipients to the vector
         while (std::getline(value, value_str, ','))
             users.push_back(value_str);    
     }
 
-    if (msg.find(msg) == std::string::npos || message == ""){
+    if (message.empty()){																					// checking if there is a message to send
         error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
         return;
     }

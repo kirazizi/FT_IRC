@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:35:21 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/02 21:22:28 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,15 @@ void server::topic_cmd(std::string msg, int fdclient){
 	split >> channel_name;
 	channel_name = to_lower(channel_name);
 
-	if (channel_name.empty() || channel_name == ":" || channel_name == "#"){
+	if (channel_name.empty() || channel_name == ":" || channel_name == "#"){			// checking if the command has enough parameters
 		error_reply(fdclient, "461", "TOPIC", "", "Not enough parameters");
 		return;
 	}
-	else if (channel_name[0] != '#'){
+	else if (channel_name[0] != '#'){													// checking if the channel name is valid
 		error_reply(fdclient, "403", "TOPIC", channel_name, "Bad channel name");
 		return;
 	}
-	else if (map_channels.find(channel_name) == map_channels.end()){
+	else if (map_channels.find(channel_name) == map_channels.end()){					// checking if the channel exists
 		error_reply(fdclient, "403", "TOPIC", channel_name, "No such channel");
 		return;
 	}

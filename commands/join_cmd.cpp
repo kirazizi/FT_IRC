@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/01 19:27:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/04 12:32:10 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,31 +43,31 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		channel_name = channels[i];
-		if (channel_name[0] != '#' || channel_name == "#"){
+		if (channel_name[0] != '#' || channel_name == "#"){ 																						// checking if the channel name is not valid
 			error_reply(fdclient, "403", "JOIN", "\"" + channel_name + "\"", "Bad channel name");
 			continue;
 		}
-		else if (map_channels.find(channel_name) == map_channels.end()){
+		else if (map_channels.find(channel_name) == map_channels.end()){ 																			//checking if the channel is new
 			map_channels[channel_name] = channel(channel_name);
 			map_channels[channel_name].topic.first = "";
 			map_channels[channel_name].topic.second = ":No topic is set";
 			map_channels[channel_name].limit = 0;
 			map_channels[channel_name].add_op(fdclient);
 		}
-		else if (map_channels[channel_name].is_client(fdclient)){
+		else if (map_channels[channel_name].is_client(fdclient)){ 																					// checking if the client is already in the channel
 			error_reply(fdclient, "443", "JOIN " , "\"" + channel_name + "\"", "You are already in that channel");
 			continue;
 		}
-		else if (map_channels[channel_name].is_limited && map_channels[channel_name].clients.size() >= (size_t)map_channels[channel_name].limit){
+		else if (map_channels[channel_name].is_limited && map_channels[channel_name].clients.size() >= (size_t)map_channels[channel_name].limit){ 	// checking if the channel is full
 			error_reply(fdclient, "471", "JOIN", "\"" + channel_name + "\"", "This channel is full");
 			continue;
 		}
-		else if (map_channels[channel_name].is_invite_only && !map_channels[channel_name].is_invited_client(fdclient)){
+		else if (map_channels[channel_name].is_invite_only && !map_channels[channel_name].is_invited_client(fdclient)){ 							// checking if the client is invited
 			error_reply(fdclient, "473", "JOIN", "\"" + channel_name + "\"", "You are not invited to this channel");
 			error_reply(fdclient, "473", "JOIN", client_nick , "Try to ask one these ops: " + map_channels[channel_name].get_ops());
 			continue;
 		}
-		else if (map_channels[channel_name].is_private){
+		else if (map_channels[channel_name].is_private){																							// checking if the channel is private
 			if (keys.size() == 0 || i >= keys.size() || !map_channels[channel_name].is_password(keys[i])){
 				error_reply(fdclient, "475", "JOIN", "\"" + channel_name + "\"", "Wrong key");
 				continue;
@@ -94,8 +94,8 @@ void server::join_cmd(std::string msg, int fdclient){
 		error_reply(fdclient, "461", "JOIN", "", "Not enough parameters");
 		return;
 	}
-	else 
-		while (std::getline(value, value_str, ','))
+	else
+		while (std::getline(value, value_str, ',')) 																								// putting the channels in a vector
 			if (value_str != ""){
 				value_str = to_lower(value_str);
 				channels.push_back(value_str);
@@ -105,7 +105,7 @@ void server::join_cmd(std::string msg, int fdclient){
 	split >> value_str;
 	value << value_str;
 
-	while (std::getline(value, value_str, ','))
+	while (std::getline(value, value_str, ',')) 																									// putting the keys in a vector
 		keys.push_back(value_str);
 
 	join_the_channels(channels, keys, fdclient);

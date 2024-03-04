@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 21:59:59 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/02 21:10:43 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,39 +32,39 @@ void server::invite_cmd(std::string msg, int fdclient){
 
 	channel_name = to_lower(channel_name);
 
-	if (channel_name.empty() || invited_name.empty() || invited_name[0] == ':' || channel_name[0] == ':'){
+	if (channel_name.empty() || invited_name.empty() || invited_name[0] == ':' || channel_name[0] == ':'){				// checking if the command has enough parameters
 		error_reply(fdclient, "461", "INVITE", "", "Not enough parameters");
 		return;
 	}
-	else if (channel_name[0] != '#' || channel_name == "#" || map_channels.find(channel_name) == map_channels.end()){
+	else if (channel_name[0] != '#' || channel_name == "#" || map_channels.find(channel_name) == map_channels.end()){	// checking if the channel name is not valid
 		error_reply(fdclient, "403", "INVITE", "\"" + channel_name + "\"", "No such channel");
 		return;
 	}
-	else if (!map_channels[channel_name].is_client(fdclient)){
+	else if (!map_channels[channel_name].is_client(fdclient)){															// checking if the client is not in the channel
 		error_reply(fdclient, "442", client_nick, "", "You are not in that channel");
 		return;
 	}
-	else if (!map_channels[channel_name].is_invite_only){
+	else if (!map_channels[channel_name].is_invite_only){																// checking if the channel is invite only
 		error_reply(fdclient, "482", "INVITE", "", "Channel is not invite only");
 		return;
 	}
-	else if (!map_channels[channel_name].is_op(fdclient)){
+	else if (!map_channels[channel_name].is_op(fdclient)){																// checking if the client is an operator
 		error_reply(fdclient, "482", "INVITE", "", "You're not the channel operator");
 		return;
 	}
-	else if (map_clients.find(invited_name) == map_clients.end()){
+	else if (map_clients.find(invited_name) == map_clients.end()){														// checking if the client is not in the server
 		error_reply(fdclient, "401", "INVITE", "(" + invited_name + ")", "No such nick");
 		return;
 	}
-	else if (map_clients[invited_name].fd == fdclient){
+	else if (map_clients[invited_name].fd == fdclient){																	// checking if the client is inviting himself
 		error_reply(fdclient, "443", "INVITE", invited_name, "You can't invite yourself");
 		return;
 	}
-	else if (map_channels[channel_name].is_client(map_clients[invited_name].fd)){
+	else if (map_channels[channel_name].is_client(map_clients[invited_name].fd)){										// checking if the client is already in the channel
 		error_reply(fdclient, "443", "INVITE", invited_name, "is already on the channel");
 		return;
 	}
-	else if (map_channels[channel_name].is_invited_client(map_clients[invited_name].fd)){
+	else if (map_channels[channel_name].is_invited_client(map_clients[invited_name].fd)){								// checking if the client is already invited
 		error_reply(fdclient, "443", "INVITE", invited_name, "is already invited");
 		return;
 	}

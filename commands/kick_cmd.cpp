@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/01 16:43:16 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/04 12:30:18 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,16 @@ void server::kick_users(std::string channel_name, std::vector<std::string> users
 	for (size_t i = 0; i < users.size(); i++)
 	{
 		kicked_user = users[i];
-		if (map_clients.find(kicked_user) == map_clients.end()){
+		if (map_clients.find(kicked_user) == map_clients.end()){									// checking if the client is not in the server
 			error_reply(fdclient, "401", client_nick, kicked_user, "No such nick");
 			continue;
 		}
 		fd_kicked_user = map_clients[kicked_user].fd;
-		if (fd_kicked_user == fdclient){
+		if (fd_kicked_user == fdclient){															// checking if the client is kicking himself
 			error_reply(fdclient, "441", client_nick, kicked_user, "You can't kick yourself");
 			continue;
 		}
-		else if (map_channels[channel_name].is_client(fd_kicked_user) == false){
+		else if (map_channels[channel_name].is_client(fd_kicked_user) == false){					// checking if the client is not in the channel
 			error_reply(fdclient, "441", client_nick, kicked_user, "They aren't on that channel");
 			continue;
 		}
@@ -67,7 +67,7 @@ void server::kick_cmd(std::string msg, int fdclient){
 	value << value_str;
 	split >> reason;
 
-	if (channel_name.empty() || value_str.empty() || (channel_name == "#" && value_str.empty())){
+	if (channel_name.empty() || value_str.empty() || (channel_name == "#" && value_str.empty())){ 	// checking if the command has enough parameters
 		error_reply(fdclient, "461", "KICK", "" ,"Not enough parameters");
 		return;
 	}
@@ -76,20 +76,20 @@ void server::kick_cmd(std::string msg, int fdclient){
 			users.push_back(value_str);
 	}
 
-	if (channel_name[0] != '#'){
+	if (channel_name[0] != '#'){																	// checking if the channel name is valid
 		error_reply(fdclient, "403", "KICK", + "\"" + channel_name + "\"", "Bad channel name");
 		return;
 	}
-	else if (map_channels.find(channel_name) == map_channels.end()){
+	else if (map_channels.find(channel_name) == map_channels.end()){								// checking if the channel exists
 		error_reply(fdclient, "403", "KICK " + channel_name, "", "No such channel");
 		return;
 	}
-	else if (map_channels[channel_name].is_op(fdclient) == false){
+	else if (map_channels[channel_name].is_op(fdclient) == false){									// checking if the client is an operator
 			error_reply(fdclient, "482", "KICK", channel_name, "You're not a channel operator");
 			return;
 	}
 
-    if (reason == "" || reason == "#")
+    if (reason.empty() || reason == ":")
         reason = "no reason";
     else {
         reason = msg.substr(msg.find(value_str) + value_str.length() + 1);

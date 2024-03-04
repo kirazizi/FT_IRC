@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 19:32:17 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/01 16:38:51 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/04 12:23:04 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 	for (size_t i = 0; i < channels.size(); i++)
 	{
 		channel_name = channels[i];
-		if (channel_name.empty() || channel_name[0] != '#') {
+		if (channel_name.empty() || channel_name[0] != '#') {														// checking if the channel name is valid
 			error_reply(fdclient, "403", "PART", + "\"" + channel_name + "\"" , "Bad channel name");
 			continue;
 		}
-		else if (map_channels.find(channel_name) == map_channels.end()){
+		else if (map_channels.find(channel_name) == map_channels.end()){											// checking if the channel exists
 			error_reply(fdclient, "403", "PART", + "\"" + channel_name + "\"" , "No such channel");
 			continue;
 		}
-		else if (!map_channels[channel_name].is_client(fdclient)){
+		else if (!map_channels[channel_name].is_client(fdclient)){													// checking if the client is in the channel
 			error_reply(fdclient, "442", "PART", channel_name, "You are not in that channel");
 			continue;
 		}
@@ -49,9 +49,9 @@ void server::leave_the_channels(std::vector<std::string> channels, int fdclient,
 		map_channels[channel_name].remove_client(fdclient);
 		map_channels[channel_name].remove_op(fdclient);
 		map_channels[channel_name].remove_invited_client(fdclient);
-		if (map_channels[channel_name].op_clients.size() == 0 && map_channels[channel_name].clients.size() > 0)
+		if (map_channels[channel_name].op_clients.size() == 0 && map_channels[channel_name].clients.size() > 0) 	// checking if the last op leaves the channel
 			map_channels[channel_name].add_op(map_channels[channel_name].clients[0].first);
-		else if (map_channels[channel_name].clients.size() == 0)
+		else if (map_channels[channel_name].clients.size() == 0)													// checking if the last client leaves the channel
 			map_channels.erase(channel_name);
 	}
 }
@@ -69,25 +69,25 @@ void server::part_cmd(std::string msg, int fdclient){
 	value << value_str;
 	split >> reason;
 
-	if (value_str == "" || (value_str == "#" && reason.empty()) || (value_str == ":" && reason.empty())){
+	if (value_str.empty() || (value_str == "#" && reason.empty()) || (value_str == ":" && reason.empty())){			// checking if the command has enough parameters
 		error_reply(fdclient, "461", "PART", "", "Not enough parameters");
 		return;
 	}
-	else {
+	else { 																											// adding the channels to the vector
 		while (std::getline(value, value_str, ','))
-			channels.push_back(value_str);    
+			channels.push_back(value_str);
 	}
 
-	if (msg.find(msg) == std::string::npos || reason == "" || reason == "#")
+	if (reason.empty() || reason == "#" || reason == ":")															// checking if the reason is empty
 		reason = "No reason";
-	else {	
+	else {
 		reason = msg.substr(msg.find(value_str) + value_str.length() + 1);
 		if (reason[0] == ':')
 			reason = reason.substr(1);
 		reason.erase(std::remove(reason.begin(), reason.end(), '\r'), reason.end());
 		reason.erase(std::remove(reason.begin(), reason.end(), '\n'), reason.end());
 	}
-	
+
 	leave_the_channels(channels, fdclient, reason);
 	split.clear();
 	value.clear();
