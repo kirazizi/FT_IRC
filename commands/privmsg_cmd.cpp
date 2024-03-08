@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/04 12:32:43 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/08 18:22:56 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,33 +64,35 @@ void server::privmsg_cmd(std::string msg, int fdclient){
 
 	std::stringstream split(get_value(msg));
 	std::vector<std::string> users;
-    std::string message;
-    std::stringstream value;
-    std::string value_str;
+	std::string message;
+	std::stringstream value;
+	std::string value_str;
+	std::string founded;
 
-    split >> value_str;
-    value << value_str;
-    split >> message;
+	split >> value_str;
+	founded = value_str;
+	value << value_str;
+	split >> message;
 
-    if (value_str == "" || (value_str == "#" && message.empty())){											// checking if the command has enough parameters
-        error_reply(fdclient, "411", "PRIVMSG", "", "No recipient given");
-        return;
-    }
-    else {																									// adding the recipients to the vector
-        while (std::getline(value, value_str, ','))
-            users.push_back(value_str);    
-    }
+	if (value_str == "" || (value_str == "#" && message.empty())){											// checking if the command has enough parameters
+		error_reply(fdclient, "411", "PRIVMSG", "", "No recipient given");
+		return;
+	}
+	else {																									// adding the recipients to the vector
+		while (std::getline(value, value_str, ','))
+			users.push_back(value_str);    
+	}
 
-    if (message.empty()){																					// checking if there is a message to send
-        error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
-        return;
-    }
+	if (message.empty()){																					// checking if there is a message to send
+		error_reply(fdclient, "412", "PRIVMSG", "", "No text to send");
+		return;
+	}
 	else if (message[0] == ':')
-		message = msg.substr(msg.find(value_str) + value_str.length() + 2);
-    else 
-        message = msg.substr(msg.find(value_str) + value_str.length() + 1);
+		message = msg.substr(msg.find(founded) + founded.length() + 1);
+	else 
+		message = msg.substr(msg.find(founded) + founded.length());
 
-    send_privmsgs(users, message, fdclient);
-    split.clear();
-    value.clear();
+	send_privmsgs(users, message, fdclient);
+	split.clear();
+	value.clear();
 }
