@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/26 19:01:51 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/08 11:46:58 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,22 @@ int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
     std::cout << "▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄   ░█░ █▄█   █ █▀▄ █▄▄   ▄█ ██▄ █▀▄ ▀▄▀ ██▄ █▀▄" << std::endl;
     
-    std::cout << "\033[34m\t\tServer is running on port: " << this->port << "\033[0m" << std::endl;
+    std::cout << "\033[34m\t\tServer is running on port: " << this->port << "\033[0m"<< std::endl;
+    std::cout << "\033[34m\t\t     host: " << host() << "\033[0m"<< std::endl;
 
     // create socket using socket() function
-    int fdsocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET = IPv4, SOCK_STREAM = TCP, 0 = IP
-    if (fdsocket == -1){
+    int fdsocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET = IPv4, SOCK_STREAM = TCP, 0 = protcol (TCP)
+    if (fdsocket < 0){
         std::cout << "Error: creating socket" << std::endl;
         exit(1);
     }
     
     // set socket to non-blocking using fcntl() function
-    fcntl(fdsocket, F_SETFL, O_NONBLOCK);
+    fcntl(fdsocket, F_SETFL, O_NONBLOCK); // F_SETFL = set file status flags, O_NONBLOCK = non-blocking mode
     
     // set socket options using setsockopt() function to reuse the address
     int yes = 1;
-    if (setsockopt(fdsocket, SOL_SOCKET, SO_REUSEADDR,  &yes, sizeof(int)) == -1){
+    if (setsockopt(fdsocket, SOL_SOCKET, SO_REUSEADDR,  &yes, sizeof(int)) < 0){
         std::cout << "Error: setsockopt failed" << std::endl;
         exit(1);
     }
@@ -38,28 +39,22 @@ int server::server_setup(){
     struct sockaddr_in srv;
     // clear address structure
     memset(&srv, 0, sizeof(srv));
-    // bind socket to the server address using bind() function
     srv.sin_family = AF_INET; // IPv4
     srv.sin_port = htons(this->port); // convert port number to network byte order (big endian)
     srv.sin_addr.s_addr = INADDR_ANY; // IP address
 
-    if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv)) == -1){ // bind socket to the server address
+    // bind socket to the server address using bind() function
+    if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv)) < 0){ // bind socket to the server address
         std::cout << "Error: binding socket" << std::endl;
         exit(1);
     }
     
     // listen for connections using listen() function
-    if(listen(fdsocket, SOMAXCONN) == -1){ // 10 is the maximum number of connections in the queue
+    if(listen(fdsocket, SOMAXCONN) < 0){ // SOMAXCONN = 128 maximum length of the queue of pending connections
         std::cout << "Error: listening" << std::endl;
         exit(1);
     }
-
     return fdsocket;
-}
-
-std::string get_ip(struct in_addr add){
-    char *ip = inet_ntoa(add);
-    return std::string(ip);
 }
 
 void server::server_accept(int fdsocket){
@@ -83,30 +78,6 @@ void server::server_accept(int fdsocket){
     vec_clients.push_back(obj_client);
 }
 
-std::string host(){
-    // gethostname() function
-    
-    char host[1024];
-    if (gethostname(host, 1024) < 0){
-        std::cout << "Error: getting hostname" << std::endl;
-        // throw std::runtime_error("Error: getting hostname");dwd
-    }
-    return std::string(host);
-}
-
-void ft_send(int fdclient, std::string msg){
-    if (send(fdclient, msg.c_str(), msg.length(), 0) < 0){
-        std::cout << "Error: sending message" << std::endl;
-        exit(1);
-    }
-}
-
-void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg){
-    std::string prefix = host();
-    std::string response = ":" + prefix + " " + cmd + " " + nick + " :" + msg + "\r\n";
-    ft_send(fdclient, response);
-}
-
 void server::identify_client(std::string msg,int fdclient){
     std::stringstream ss(msg);
     client *target = NULL;
@@ -116,7 +87,8 @@ void server::identify_client(std::string msg,int fdclient){
     ss >> cmd;
     ss >> value;
     ss >> param;
-
+    
+    cmd = to_upper(cmd);
     for (size_t i = 0; i < vec_clients.size(); i++)
         if (vec_clients[i].fd == fdclient)
             target = &vec_clients[i];
@@ -150,7 +122,12 @@ void server::identify_client(std::string msg,int fdclient){
         }
         target->password = value;
     }
-    if(cmd == "NICK" && value != ""){ // i want to check if the nick polices are cworrect
+    if(cmd == "NICK" && value != ""){
+        // nick name policy
+        if (nick_policy(value, fdclient)){
+            ss.clear();
+            return ;
+        }
         // check if nickname is already taken
         for (size_t i = 0; i < vec_clients.size(); i++){
             if (vec_clients[i].nickname == value){
@@ -159,6 +136,7 @@ void server::identify_client(std::string msg,int fdclient){
                 return ;
             }
         }
+        // check if nickname contains space
         if (param != ""){
             msg_format(fdclient, "432", "+_+" , "Nickname cannot contain space please try again!");
             ss.clear();
@@ -166,6 +144,7 @@ void server::identify_client(std::string msg,int fdclient){
         }
         target->nickname = value;
     }
+    // check if all required fields are filled
     if(!target->username.empty() && !target->nickname.empty() && !target->password.empty()){
         if(!target->is_connected){
             std::cout << "\033[32m" << target->nickname << " has joined" << "\033[0m" << std::endl;
@@ -191,7 +170,6 @@ int server::server_recieve(int fdclient){
     }
 
     if (rcv == 0){
-        // this->buffer.clear();
         return 1;
     }
 
@@ -207,22 +185,6 @@ int server::server_recieve(int fdclient){
         }
     }
     return 0;
-}
-
-void server::clear_all_client(){
-    // clear all clients
-    for (size_t i = 0; i < vpoll.size(); i++)
-        close(vpoll[i].fd);
-    vpoll.clear();
-    vec_clients.clear();
-    map_clients.clear();
-    map_channels.clear();
-    exit(1);
-}
-
-void signal_handler(int signum){
-    (void)signum;
-    exit(1);
 }
 
 void server::server_polling(int fdsocket){

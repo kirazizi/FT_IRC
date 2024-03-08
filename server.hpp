@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/02/29 22:40:26 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/07 11:41:56 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,10 @@ class server {
 void msg_format(int fdclient, std::string cmd, std::string nick, std::string msg);
 void ft_send(int fdclient, std::string msg);
 std::string host();
+std::string get_ip(struct in_addr add);
+int nick_policy(std::string nick, int fdclient);
+void signal_handler(int signum);
+void parsing_input(int port, std::string password);
+
 
 #endif
