@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/01 13:39:07 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/09 18:57:44 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,13 +101,10 @@ void server::mode_limit(std::string channel_name, std::string mode, std::string 
 		map_channels[channel_name].remove_limit();
 }
 
-// void server::mode_applier
-
 void server::mode_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));
 	std::string channel_name;
 	std::string mode;
-	std::string value;
 	std::string client_name;
 	std::string client_nick;
 	std::string client_ip;
@@ -154,19 +151,22 @@ void server::mode_cmd(std::string msg, int fdclient){
 		return;
 	}
 	else if (mode[0] != '+' && mode[0] != '-'){
-		error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "is unknown mode char to the server");
+		error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "invalid input to mode command");
 		return;
 	}
 	else {
 		int mode_cmd;
 		std::string da_mode;
+		std::string value;
 		char modes[] = {'i', 't', 'k', 'o', 'l'};
 		
-		for (size_t i = 1; i < mode.size(); i++){
+		for (size_t i = 1; i < mode.size(); i++)
+		{
 			for (mode_cmd = 0; mode_cmd < 5; mode_cmd++)
 				if (mode[i] == modes[mode_cmd])
 					break;
 			da_mode = std::string(1, mode[0]) + std::string(1, mode[i]);
+			value = "";
 			switch(mode_cmd){
 				case 0:
 					mode_invite(channel_name, da_mode);
@@ -177,6 +177,7 @@ void server::mode_cmd(std::string msg, int fdclient){
 				case 2:
 					split >> value;
 					mode_password(channel_name, da_mode, value, fdclient);
+					value = "";
 					break;
 				case 3:
 					split >> value;
@@ -187,11 +188,11 @@ void server::mode_cmd(std::string msg, int fdclient){
 					mode_limit(channel_name, da_mode, value, fdclient);
 					break;
 				default:
-					error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "is unknown mode char to the server");
+					error_reply(fdclient, "472", "MODE", "\"" + da_mode + "\"", "is unknown mode char to the server");
 					continue;
 			}
 			if (mode_error == false){
-				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " MODE " + channel_name + " " + da_mode + "\n";
+				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " MODE " + channel_name + " " + da_mode + " " + value + "\n";
 				map_channels[channel_name].send_channel_msg(reply, fdclient);
 				send(fdclient, reply.c_str(), reply.length(), 0);
 			}

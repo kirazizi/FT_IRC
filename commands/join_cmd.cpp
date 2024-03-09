@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/04 12:32:10 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/09 19:19:10 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void server::join_channel_msg(std::string channel_name, std::string client_name,
 	std::string host_post = host();
 
 	reply += ":" + client_nick + "!~" + client_name + "@" + map_clients[client_nick].client_ip + " JOIN " + channel_name + "\r\n";
-	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
+	reply += ":" + host_post + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic + "\n";
 	reply += ":" + host_post + " 353 " + client_nick + " = " + channel_name + " :" + map_channels[channel_name].get_clients_names() + "\n";
 	reply += ":" + host_post + " 366 " + client_nick + " = " + channel_name + " :" + "End of /NAMES list." + "\n";
 	send(fdclient, reply.c_str(), reply.size(), 0);
@@ -49,8 +49,7 @@ void server::join_the_channels(std::vector<std::string> channels, std::vector<st
 		}
 		else if (map_channels.find(channel_name) == map_channels.end()){ 																			//checking if the channel is new
 			map_channels[channel_name] = channel(channel_name);
-			map_channels[channel_name].topic.first = "";
-			map_channels[channel_name].topic.second = ":No topic is set";
+			map_channels[channel_name].topic = ":No topic is set";
 			map_channels[channel_name].limit = 0;
 			map_channels[channel_name].add_op(fdclient);
 		}

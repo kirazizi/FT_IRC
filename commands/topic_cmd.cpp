@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/02 21:22:28 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/09 19:19:24 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void server::topic_cmd(std::string msg, int fdclient){
 
 	if (!(split >> topic)){
 		if (map_channels[channel_name].is_client(fdclient)){
-			reply = ":" + host() + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic.second + "\n";
+			reply = ":" + host() + " 332 " + client_nick + " " + channel_name + " " + map_channels[channel_name].topic + "\n";
 			send(fdclient, reply.c_str(), reply.size(), 0);
 		}
 		else
@@ -62,13 +62,10 @@ void server::topic_cmd(std::string msg, int fdclient){
 		}
 		topic = get_value(msg).substr(channel_name.size());
 		topic = topic.substr(topic.find_first_not_of(" "));
-		map_channels[channel_name].topic.first = client_nick;
-		map_channels[channel_name].topic.second = topic;
+		map_channels[channel_name].topic = topic;
 	
 		reply = ":" + client_nick + " TOPIC " + channel_name + " " + topic + "\r\n";
 		send(fdclient, reply.c_str(), reply.size(), 0);
-	
-		std::cout << "topic: " << topic << std::endl;
 		reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " TOPIC " + channel_name + " " + topic + "\r\n";
 		map_channels[channel_name].send_channel_msg(reply, fdclient);
 	}
