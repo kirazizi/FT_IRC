@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/07 11:41:56 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/09 17:20:45 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,10 @@ class server {
         void mode_op(std::string channel_name, std::string mode, std::string value, int fdclient);
         void mode_limit(std::string channel_name, std::string mode, std::string value, int fdclient);
 		
+		/*			IDENTIFY FUNCTIOBS		*/
+		void check_nick(std::string msg, int fdclient);
+		void check_user(int fdclient);
+		void check_pass(int fdclient);
 
 		/*			MPLAY FUNCTIONS			*/
 		void mplay_cmd(std::string msg, int fdclient);

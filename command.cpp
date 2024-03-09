@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/29 21:17:20 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/09 17:24:48 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,11 @@
 void server::handle_cmd(std::string msg, int fdclient){
 	int i = 0;
 	std::string cmd;
-	std::string commands[] = {"JOIN", "PART", "QUIT", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "MPLAY", "PONG"};
+	std::string commands[] = {"JOIN", "PART", "QUIT", "PRIVMSG", "KICK", "INVITE", "TOPIC", "MODE", "MPLAY",
+	"NICK", "USER", "PASS", "PONG"};
 
 	cmd = to_upper(get_cmd(msg));
-	while(i < 10){
+	while(i < 13){
 		if(cmd == commands[i])
 			break;
 		i++;
@@ -54,6 +55,15 @@ void server::handle_cmd(std::string msg, int fdclient){
 			mplay_cmd(msg, fdclient);
 			break;
 		case 9:
+			check_nick(msg, fdclient);
+			break;
+		case 10:
+			check_user(fdclient);
+			break;
+		case 11:
+			check_pass(fdclient);
+			break;
+		case 12:
 			break;
 		default:
             error_reply(fdclient, "421", "SERVER", get_cmd(msg), "Unknown command");
