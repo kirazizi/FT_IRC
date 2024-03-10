@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 18:57:44 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/10 20:18:51 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void server::mode_op(std::string channel_name, std::string mode, std::string val
 			error_reply(fdclient, "482", "MODE", value, "Is already an operator");
 		}
 		else {
-			std::string reply = ":" + host() + " 273 " + channel_name + " :You are now an operator of " + "\"" + channel_name + "\"\n";
+			std::string reply = ":" + host() + " 381 " + channel_name + " :You are now an operator of " + "\"" + channel_name + "\"\n";
 			send(map_clients[value].fd, reply.c_str(), reply.length(), 0);
 			map_channels[channel_name].add_op(map_clients[value].fd);
 		}
@@ -74,7 +74,7 @@ void server::mode_op(std::string channel_name, std::string mode, std::string val
 			error_reply(fdclient, "482", "MODE", value, "You can't remove your own operator status");
 		}
 		else {
-			std::string reply = ":" + host() + " 273 " + channel_name + " :You are no longer an operator of " + "\"" + channel_name + "\"\n";
+			std::string reply = ":" + host() + " 491 " + channel_name + " :You are no longer an operator of " + "\"" + channel_name + "\"\n";
 			send(map_clients[value].fd, reply.c_str(), reply.length(), 0);
 			map_channels[channel_name].remove_op(map_clients[value].fd);
 		}
@@ -125,7 +125,7 @@ void server::mode_cmd(std::string msg, int fdclient){
 	
 	if (channel_name.empty() || (channel_name == "#" && mode.empty())){
 		error_reply(fdclient, "461", "MODE", "", "Not enough parameters");
-		error_reply(fdclient, "650", "MODE", "", "Syntax: <#channel> <\"+/-\"mode> [value (if needed)]");
+		error_reply(fdclient, "421", "MODE", "", "Syntax: <#channel> <\"+/-\"mode> [value (if needed)]");
 		return;
 	}
 	else if (channel_name[0] != '#'){
@@ -152,6 +152,7 @@ void server::mode_cmd(std::string msg, int fdclient){
 	}
 	else if (mode[0] != '+' && mode[0] != '-'){
 		error_reply(fdclient, "472", "MODE", "\"" + mode + "\"", "invalid input to mode command");
+		error_reply(fdclient, "421", "MODE", "", "Syntax: <#channel> <\"+/-\"mode> [value (if needed)]");
 		return;
 	}
 	else {

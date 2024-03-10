@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 17:02:41 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 19:18:45 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/10 20:21:31 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ void server::quit_cmd(std::string msg, int fdclient){
 			if (it->second.op_clients.size() == 0 && it->second.clients.size() > 0)	// checking if the last op leaves the channel
 			{
 				it->second.add_op(it->second.clients[0].first);
-				reply = ":" + host() + " 273 " + it->first + " :You are now an operator of " + "\"" + it->first + "\"\n";
+				reply = ":" + host() + " 381 " + it->first + " :You are now an operator of " + "\"" + it->first + "\"\n";
 				send(it->second.clients[0].first, reply.c_str(), reply.length(), 0);
-				reply = ":" + client_nick + "!~" + client_name + "@" + client_ip + " MODE " + it->first + " " + "+o " + it->second.clients[0].second + "\n";
+				reply = ":\"TheServer\"!~\"TheServer\"@" + host() + " MODE " + it->first + " " + "+o " + it->second.clients[0].second + "\n";
 				it->second.send_channel_msg(reply, fdclient);
 			}
 			else if (it->second.clients.size() == 0)								// checking if the last client leaves the channel and reseting the search

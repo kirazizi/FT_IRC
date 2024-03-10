@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/04 12:30:18 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/10 20:03:58 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void server::kick_users(std::string channel_name, std::vector<std::string> users
 		}
 		fd_kicked_user = map_clients[kicked_user].fd;
 		if (fd_kicked_user == fdclient){															// checking if the client is kicking himself
-			error_reply(fdclient, "441", client_nick, kicked_user, "You can't kick yourself");
+			error_reply(fdclient, "442", client_nick, kicked_user, "You can't kick yourself");
 			continue;
 		}
 		else if (map_channels[channel_name].is_client(fd_kicked_user) == false){					// checking if the client is not in the channel
@@ -63,6 +63,7 @@ void server::kick_cmd(std::string msg, int fdclient){
 	std::string value_str;
 
 	split >> channel_name;
+	channel_name = to_lower(channel_name);
 	split >> value_str;
 	value << value_str;
 	split >> reason;
@@ -77,11 +78,11 @@ void server::kick_cmd(std::string msg, int fdclient){
 	}
 
 	if (channel_name[0] != '#'){																	// checking if the channel name is valid
-		error_reply(fdclient, "403", "KICK", + "\"" + channel_name + "\"", "Bad channel name");
+		error_reply(fdclient, "403", "KICK", "\"" + channel_name + "\"", "Bad channel name");
 		return;
 	}
 	else if (map_channels.find(channel_name) == map_channels.end()){								// checking if the channel exists
-		error_reply(fdclient, "403", "KICK " + channel_name, "", "No such channel");
+		error_reply(fdclient, "403", "KICK", "\"" + channel_name + "\"", "No such channel");
 		return;
 	}
 	else if (map_channels[channel_name].is_op(fdclient) == false){									// checking if the client is an operator

@@ -6,7 +6,7 @@
 /*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 19:09:16 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/08 18:22:56 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/10 20:21:01 by tajjid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void server::send_privmsgs(std::vector<std::string> users, std::string message, 
 				error_reply(fdclient, "403", "PRIVMSG", "\"" + channel_name + "\"", "Bad channel name");
 			}
 			else if (map_channels.find(channel_name) == map_channels.end()){								// checking if the channel exists
-				error_reply(fdclient, "401", client_nick , "\"" + channel_name + "\"", "No such channel");
+				error_reply(fdclient, "403", client_nick , "\"" + channel_name + "\"", "No such channel");
 			}
 			else if (!map_channels[channel_name].is_client(fdclient)){										// checking if the client is in the channel
 				error_reply(fdclient, "442", client_nick , channel_name, "You are not in that channel");
