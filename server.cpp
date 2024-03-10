@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/09 12:25:42 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/10 11:53:08 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,11 @@ int server::server_setup(){
     struct sockaddr_in srv;
     // clear address structure
     memset(&srv, 0, sizeof(srv));
-    srv.sin_family = AF_INET; // IPv4
-    srv.sin_port = htons(this->port); // convert port number to network byte order (big endian)
-    srv.sin_addr.s_addr = INADDR_ANY; // IP address
+    
+    // set address structure
+    srv.sin_family = AF_INET;
+    srv.sin_port = htons(this->port);
+    srv.sin_addr.s_addr = INADDR_ANY;
 
     // bind socket to the server address using bind() function
     if(bind(fdsocket, (struct sockaddr *)&srv, sizeof(srv)) < 0){ // bind socket to the server address

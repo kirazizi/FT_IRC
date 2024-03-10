@@ -6,9 +6,11 @@
 #    By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/23 14:01:20 by sbzizal           #+#    #+#              #
-#    Updated: 2024/03/09 17:24:37 by sbzizal          ###   ########.fr        #
+#    Updated: 2024/03/10 12:00:06 by sbzizal          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+NAME = ircserv
 
 CC = c++
 
@@ -25,26 +27,28 @@ HDR = server.hpp client.hpp headers.hpp channel.hpp \
 
 HDR_BNS = ./mplay-bot/mplayer.hpp \
 
-EXE = ircserv
+OBJ = $(SRC:.cpp=.o)
 
-EXE_BNS = mplayer
+OBJ_BNS = $(BNS:.cpp=.o)
 
-all: $(EXE)
+all: $(NAME)
 
-$(EXE): $(SRC) $(HDR)
-	$(CC) $(CFLAGS) $(SRC) -o $(EXE)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-bonus: $(EXE_BNS)
+%.o: %.cpp $(HDR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(EXE_BNS): $(BNS) $(HDR_BNS)
-	$(CC) $(CFLAGS) $(BNS) -o $(EXE_BNS)
+bonus: $(OBJ_BNS)
+	$(CC) $(CFLAGS) $(OBJ_BNS) -o mplayer
 
 clean:
-	rm -f $(EXE) $(EXE_BNS)
+	rm -f $(OBJ) $(OBJ_BNS)
 
 fclean: clean
+	rm -f ircserv mplayer
 
-re: fclean all bonus
+re: fclean all
 
 .PHONY: all bonus clean fclean re
 
