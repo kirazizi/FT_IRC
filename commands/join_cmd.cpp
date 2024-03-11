@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   join_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 15:48:51 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 19:19:10 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 13:36:56 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::join_channel_msg(std::string channel_name, std::string client_name, std::string client_nick, int fdclient){
 	std::string reply;

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/29 20:30:40 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/29 21:15:25 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 13:44:22 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
-#include "headers.hpp"
-#include "server.hpp"
+#include "../src/headers.hpp"
+#include "../server/server.hpp"
 
 std::string get_cmd(const std::string &msg){
 	size_t pos = msg.find(' ');

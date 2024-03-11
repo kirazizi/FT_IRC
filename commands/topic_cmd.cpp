@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   topic_cmd.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 12:42:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 19:19:24 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 13:37:14 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::topic_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));

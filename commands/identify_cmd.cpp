@@ -6,12 +6,12 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/09 17:21:22 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/09 17:24:40 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:34:46 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::check_user(int fdclient){
 	// ERR_ALREADYREGISTRED

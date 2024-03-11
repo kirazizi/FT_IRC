@@ -6,11 +6,11 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/10 11:53:08 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:49:11 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server/server.hpp"
 
 int server::server_setup(){
     std::cout << "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀   ▀█▀ █▀█   █ █▀█ █▀▀   █▀ █▀▀ █▀█ █░█ █▀▀ █▀█" << std::endl;
@@ -42,7 +42,7 @@ int server::server_setup(){
     
     // set address structure
     srv.sin_family = AF_INET;
-    srv.sin_port = htons(this->port);
+    srv.sin_port = htons(this->port); // convert port to
     srv.sin_addr.s_addr = INADDR_ANY;
 
     // bind socket to the server address using bind() function
@@ -68,7 +68,6 @@ void server::server_accept(int fdsocket){
         std::cout << "Error: accepting connection" << std::endl;
         exit(1);
     }
-    std::cout<< "\033[33mconecting ...\033[0m" << std::endl;
     struct pollfd clpoll;
     clpoll.fd = fdclient;
     clpoll.events = POLLIN;
@@ -78,6 +77,7 @@ void server::server_accept(int fdsocket){
     class client obj_client(fdclient);
     obj_client.client_ip = get_ip(client.sin_addr);
     vec_clients.push_back(obj_client);
+    std::cout<< "\033[33mclient: " << obj_client.client_ip << " connecting ...\033[0m" << std::endl;
 }
 
 void server::identify_client(std::string msg,int fdclient){
@@ -180,7 +180,6 @@ int server::server_recieve(int fdclient){
             vec_clients[i].buffer_cl += msg;
             if (vec_clients[i].buffer_cl.find("\n") == std::string::npos)
                 return 0;
-            std::cout << "buffer: " << vec_clients[i].buffer_cl;
             std::string msg = vec_clients[i].buffer_cl;
             this->vec_clients[i].buffer_cl.clear();
             identify_client(msg, fdclient);
@@ -191,7 +190,6 @@ int server::server_recieve(int fdclient){
 
 void server::server_polling(int fdsocket){
     signal(SIGPIPE, SIG_IGN);
-    signal(SIGINT, signal_handler);
     struct pollfd srvpoll;
 
     srvpoll.fd = fdsocket;

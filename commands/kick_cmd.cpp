@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   kick_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:53:29 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/10 20:03:58 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 14:02:29 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::kick_users(std::string channel_name, std::vector<std::string> users, std::string reason, int fdclient){
 	std::string reply;

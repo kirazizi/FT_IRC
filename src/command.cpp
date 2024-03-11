@@ -6,12 +6,12 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 15:52:00 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/09 17:24:48 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:50:44 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
-#include "client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::handle_cmd(std::string msg, int fdclient){
 	int i = 0;

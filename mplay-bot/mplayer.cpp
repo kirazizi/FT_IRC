@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 21:52:04 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/01 16:41:54 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 12:40:19 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,11 @@ int ft_recv(int sockfd, std::vector<std::string> mp3List){
 }
 
 int server_setup(std::string server_ip, int port){
+    
+    // Convert localhost
+    if (server_ip == "localhost")
+        server_ip = "127.0.0.1";
+
     // Create socket
     struct sockaddr_in server_addr;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -161,10 +166,11 @@ int server_setup(std::string server_ip, int port){
 }
 
 void signal_handler(int signum){
+    (void)signum;
     system("killall afplay");
     system("clear");
     std::cout << "\033[1;31m Goodbye ... \033[0m" << std::endl;
-    exit(signum);
+    exit(1);
 }
 
 void mplayer::run(void){

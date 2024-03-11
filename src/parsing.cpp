@@ -6,11 +6,11 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 16:03:35 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/07 11:52:03 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:50:55 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server/server.hpp"
 
 void password_policy(std::string password){
     // check password space

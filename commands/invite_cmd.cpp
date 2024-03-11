@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   invite_cmd.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 19:19:35 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/02 21:10:43 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 13:36:49 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::invite_cmd(std::string msg, int fdclient){
 	std::stringstream split(get_value(msg));

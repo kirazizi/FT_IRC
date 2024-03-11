@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/02 19:01:18 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 19:16:59 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 13:53:49 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include "server.hpp"
-#include "client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 class server;
 

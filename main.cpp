@@ -6,12 +6,12 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 13:21:55 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/07 11:53:09 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:56:06 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "headers.hpp"
-#include "server.hpp"
+#include "./src/headers.hpp"
+#include "./server/server.hpp"
 
 int main(int ac, char **av){
     int fdsocket;

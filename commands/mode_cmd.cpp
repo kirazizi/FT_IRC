@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   mode_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tajjid <tajjid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 12:51:44 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/10 20:18:51 by tajjid           ###   ########.fr       */
+/*   Updated: 2024/03/11 14:02:37 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::mode_invite(std::string channel_name, std::string mode){
 	if (mode == "+i")

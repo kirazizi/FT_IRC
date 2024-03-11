@@ -6,16 +6,16 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/09 17:20:45 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:36:31 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "headers.hpp"
-#include "client.hpp"
-#include "channel.hpp"
+#include "../src/headers.hpp"
+#include "../client/client.hpp"
+#include "../src/channel.hpp"
 
 #define KICK 1
 #define INVITE 2
@@ -99,7 +99,6 @@ void ft_send(int fdclient, std::string msg);
 std::string host();
 std::string get_ip(struct in_addr add);
 int nick_policy(std::string nick, int fdclient);
-void signal_handler(int signum);
 void parsing_input(int port, std::string password);
 
 

@@ -6,12 +6,12 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/14 21:00:12 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/02/17 20:24:06 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:37:03 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../server.hpp"
-#include "../client.hpp"
+#include "../server/server.hpp"
+#include "../client/client.hpp"
 
 void server::mplay_cmd(std::string msg, int fdclient){
 	std::stringstream ss(get_value(msg));
@@ -32,6 +32,13 @@ void server::mplay_cmd(std::string msg, int fdclient){
 	if (map_clients.find("BOT") == map_clients.end()){
 		msg_format(fdclient, "394", "BOT", "BOT is not connected");
 		return ;
+	}
+	if (value.empty()){
+		msg_format(fdclient, "394", "BOT", "use <list> to see the playlist");
+		msg_format(fdclient, "394", "BOT", "use <play> <index> to play a song");
+		msg_format(fdclient, "394", "BOT", "use <stop> to stop the song");
+		return ;
+	
 	}
 	bot_fd = map_clients["BOT"].fd;
 	response = nick + " " + value + " " + arg;

@@ -6,11 +6,11 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 15:09:37 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/01 15:13:33 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 13:51:06 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server/server.hpp"
 
 std::string get_ip(struct in_addr add){
     char *ip = inet_ntoa(add);
@@ -29,7 +29,6 @@ std::string host(){
 void ft_send(int fdclient, std::string msg){
     if (send(fdclient, msg.c_str(), msg.length(), 0) < 0){
         std::cout << "Error: sending message" << std::endl;
-        exit(1);
     }
 }
 
@@ -59,10 +58,5 @@ void server::clear_all_client(){
     vec_clients.clear();
     map_clients.clear();
     map_channels.clear();
-    exit(1);
-}
-
-void signal_handler(int signum){
-    (void)signum;
     exit(1);
 }
