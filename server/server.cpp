@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 14:01:24 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/11 13:49:11 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 14:42:18 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@ int server::server_setup(){
     std::cout << "\033[34m\t\t     host: " << host() << "\033[0m"<< std::endl;
 
     // create socket using socket() function
-    int fdsocket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET = IPv4, SOCK_STREAM = TCP, 0 = protcol (TCP)
+    int fdsocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdsocket < 0){
         std::cout << "Error: creating socket" << std::endl;
         exit(1);
     }
     
     // set socket to non-blocking using fcntl() function
-    fcntl(fdsocket, F_SETFL, O_NONBLOCK); // F_SETFL = set file status flags, O_NONBLOCK = non-blocking mode
+    fcntl(fdsocket, F_SETFL, O_NONBLOCK);
     
     // set socket options using setsockopt() function to reuse the address
     int yes = 1;
@@ -42,7 +42,7 @@ int server::server_setup(){
     
     // set address structure
     srv.sin_family = AF_INET;
-    srv.sin_port = htons(this->port); // convert port to
+    srv.sin_port = htons(this->port);
     srv.sin_addr.s_addr = INADDR_ANY;
 
     // bind socket to the server address using bind() function
@@ -52,7 +52,7 @@ int server::server_setup(){
     }
     
     // listen for connections using listen() function
-    if(listen(fdsocket, SOMAXCONN) < 0){ // SOMAXCONN = 128 maximum length of the queue of pending connections
+    if(listen(fdsocket, SOMAXCONN) < 0){
         std::cout << "Error: listening" << std::endl;
         exit(1);
     }

@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:27:47 by tajjid            #+#    #+#             */
-/*   Updated: 2024/03/11 13:36:31 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 14:42:54 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class server {
 		std::map<std::string, channel> map_channels;
 		std::string buffer;
 		bool mode_error;
-		// std::string reply;
 
 		int port;
 		std::string srv_pass;

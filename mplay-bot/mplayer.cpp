@@ -6,7 +6,7 @@
 /*   By: sbzizal <sbzizal@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 21:52:04 by sbzizal           #+#    #+#             */
-/*   Updated: 2024/03/11 12:40:19 by sbzizal          ###   ########.fr       */
+/*   Updated: 2024/03/11 14:43:59 by sbzizal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,9 +144,9 @@ int server_setup(std::string server_ip, int port){
     }
 
     // Fill in server address structure
-    server_addr.sin_family = AF_INET; // IPv4
-    server_addr.sin_port = htons(port); // Convert port to network byte order
-    server_addr.sin_addr.s_addr = inet_addr(server_ip.c_str()); // Convert IP to binary form
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     // Connect to server
     if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
@@ -159,8 +159,7 @@ int server_setup(std::string server_ip, int port){
     std::string message;
     std::string bot = "BOT\n";
     
-    if (!send(sock, bot.c_str(), bot.size(), 0))
-        throw std::runtime_error("Error: Could not send data to server");
+    send(sock, bot.c_str(), bot.size(), 0);
 
     return sock;
 }
